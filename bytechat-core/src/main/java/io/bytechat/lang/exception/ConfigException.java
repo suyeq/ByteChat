@@ -7,7 +7,7 @@ package io.bytechat.lang.exception;
  */
 public class ConfigException extends RuntimeException{
 
-    private static String errorMsg = "获取配置类异常";
+    private final static String errorMsg = "获取配置类异常";
 
     public ConfigException(){
         super(errorMsg);
