@@ -1,6 +1,7 @@
 package io.bytechat.server.channel;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 
 /**
  * @author : denglinhai
@@ -21,4 +22,11 @@ public interface ChannelManager {
      * @param channel
      */
     void removeChannel(Channel channel);
+
+    /**
+     * 获取channel包装类
+     * @param channelId
+     * @return
+     */
+    ChannelWrapper getChannelWrapper(ChannelId channelId);
 }

@@ -3,6 +3,7 @@ package io.bytechat.server.channel;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Singleton;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.AttributeKey;
@@ -38,5 +39,12 @@ public class DefaultChannelManager implements ChannelManager {
     public void removeChannel(Channel channel) {
         Assert.notNull(channel, "channel不能为空");
         channelGroup.remove(channel);
+    }
+
+    @Override
+    public ChannelWrapper getChannelWrapper(ChannelId channelId) {
+        Assert.notNull(channelId, "channelId不能为空");
+        Channel channel = channelGroup.isEmpty() ? null : channelGroup.find(channelId);
+        return channel == null ? null : new ChannelWrapper(channel, channel.attr(CHANNEL_TYPE_ATTRIBUTE_KEY).get());
     }
 }
