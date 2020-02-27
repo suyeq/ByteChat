@@ -19,9 +19,9 @@ public interface ChannelManager {
 
     /**
      * 移除channel
-     * @param channel
+     * @param channelId
      */
-    void removeChannel(Channel channel);
+    void removeChannel(ChannelId channelId);
 
     /**
      * 获取channel包装类

@@ -2,6 +2,7 @@ package io.bytechat.server.channel;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 
 /**
  * @author : denglinhai
@@ -19,7 +20,7 @@ public interface ChannelListener {
 
     /**
      * 用于从channel管理器中删除channel
-     * @param channel
+     * @param channelId
      */
-    void channelInactive(Channel channel);
+    void channelInactive(ChannelId channelId);
 }

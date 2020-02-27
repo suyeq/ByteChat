@@ -1,6 +1,9 @@
 package io.bytechat.server.session;
 
 import cn.hutool.core.lang.Assert;
+import com.alibaba.fastjson.JSONObject;
+import io.bytechat.lang.exception.ExceptionEnum;
+import io.bytechat.lang.exception.SessionException;
 import io.bytechat.server.channel.ChannelHelper;
 import io.bytechat.server.channel.ChannelWrapper;
 import io.netty.channel.Channel;
@@ -40,18 +43,33 @@ public class DefaultSession implements Session {
     @Override
     public String sessionId() {
         if (!bind.get()){
-            //throw
+            throw new SessionException(ExceptionEnum.SESSION_EXCEPTION_NOT_BIND);
         }
         return sessionId;
     }
 
     @Override
     public ChannelId channelId() {
+        if (!bind.get()){
+            throw new SessionException(ExceptionEnum.SESSION_EXCEPTION_NOT_BIND);
+        }
         return channel.id();
     }
 
     @Override
     public long userId() {
+        if (!bind.get()){
+            throw new SessionException(ExceptionEnum.SESSION_EXCEPTION_NOT_BIND);
+        }
         return userId;
+    }
+
+    @Override
+    public String toString(){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("channel", channel);
+        jsonObject.put("sessionId", sessionId);
+        jsonObject.put("userId", userId);
+        return jsonObject.toJSONString();
     }
 }

@@ -1,6 +1,7 @@
 package io.bytechat.lang.config;
 
 import io.bytechat.lang.exception.ConfigException;
+import io.bytechat.lang.exception.ExceptionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.aeonbits.owner.Config;
 
@@ -29,7 +30,7 @@ public class ConfigFactory {
                     config = org.aeonbits.owner.ConfigFactory.create(clazz);
                     if (config == null){
                         log.error("获取配置类{}失败",ThreadPoolConfig.class.getSimpleName());
-                        throw new ConfigException();
+                        throw new ConfigException(ExceptionEnum.CONFIG_EXCEPTION_NULL);
                     }
                     map.putIfAbsent(clazz, config);
                 }

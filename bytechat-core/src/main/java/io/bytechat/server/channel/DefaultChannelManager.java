@@ -36,9 +36,9 @@ public class DefaultChannelManager implements ChannelManager {
     }
 
     @Override
-    public void removeChannel(Channel channel) {
-        Assert.notNull(channel, "channel不能为空");
-        channelGroup.remove(channel);
+    public void removeChannel(ChannelId channelId) {
+        Assert.notNull(channelId, "channelId不能为空");
+        channelGroup.remove(channelId);
     }
 
     @Override
