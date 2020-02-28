@@ -21,11 +21,12 @@ public class App
 //        ThreadPoolConfig config = ConfigFactory.getConfig(ThreadPoolConfig.class);
 //        System.out.println(config.keepAliveTime());
         //Assert.isNull(new Object(),"alal");
-        try {
-            throw new ConfigException(ExceptionEnum.CONFIG_EXCEPTION_NULL);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        System.out.println("lala");
+//        try {
+//            throw new ConfigException(ExceptionEnum.CONFIG_EXCEPTION_NULL);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        System.out.println("lala");
+        System.out.println(0x1);
     }
 }

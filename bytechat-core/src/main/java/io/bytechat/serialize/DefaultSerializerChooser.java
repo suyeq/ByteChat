@@ -12,7 +12,7 @@ public class DefaultSerializerChooser implements SerializerChooser {
 
     }
 
-    public SerializerChooser newInstance(){
+    public static SerializerChooser newInstance(){
         return Singleton.get(DefaultSerializerChooser.class);
     }
 
