@@ -3,6 +3,9 @@ package io.bytechat.server;
 import cn.hutool.core.util.ObjectUtil;
 import io.bytechat.lang.config.BaseConfig;
 import io.bytechat.lang.config.ConfigFactory;
+import io.bytechat.server.channel.ChannelListener;
+import io.bytechat.server.channel.DefaultChannelListener;
+import io.bytechat.server.session.AbstractSessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -27,14 +30,21 @@ public abstract class AbstractServer implements Server{
 
     private EventLoopGroup workGroup;
 
+    private ChannelListener channelListener;
+
     /**
      * 只允许启动一次服务
      */
     private AtomicBoolean start = new AtomicBoolean(false);
 
     public AbstractServer(Integer serverPort){
+        this(serverPort, null);
+    }
+
+    public AbstractServer(Integer serverPort, ChannelListener channelListener){
         int port = ObjectUtil.isNull(serverPort) ? ConfigFactory.getConfig(BaseConfig.class).serverPort() : serverPort;
         this.serverAttr = ServerAttr.getLocalServer(port);
+        this.channelListener = channelListener == null ? DefaultChannelListener.newInstance() : channelListener;
     }
 
     @Override
@@ -43,7 +53,6 @@ public abstract class AbstractServer implements Server{
             doStart(serverAttr);
         }
     }
-
 
     @Override
     public void stop(){
@@ -67,7 +76,7 @@ public abstract class AbstractServer implements Server{
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline pipeline = socketChannel.pipeline();
-                        pipeline.addLast();
+                        pipeline.addLast(new ProtocolDispatcher(channelListener));
                     }
                 });
 

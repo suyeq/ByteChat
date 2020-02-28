@@ -15,7 +15,17 @@ public enum ExceptionEnum {
     /**
      *session未绑定channel异常
      */
-    SESSION_EXCEPTION_NOT_BIND("session尚未绑定channel");
+    SESSION_EXCEPTION_NOT_BIND("session尚未绑定channel"),
+
+    /**
+     * 协议格式错误
+     */
+    PROTOCOL_EXCEPTION_WRONG_FORMAT("协议格式错误"),
+
+    /**
+     * 未知的协议
+     */
+    PROTOCOL_EXCEPTION_UNKNOWN("未知的协议");
 
     private String msg;
 
