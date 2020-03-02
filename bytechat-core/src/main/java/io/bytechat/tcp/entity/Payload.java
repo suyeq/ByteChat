@@ -20,5 +20,16 @@ public class Payload {
 
     private Object result;
 
+    public void setSuccessMsg(int code, String msg){
+        this.success = true;
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public void setErrorMsg(int code, String msg){
+        this.success = false;
+        this.code = code;
+        this.msg = msg;
+    }
 
 }

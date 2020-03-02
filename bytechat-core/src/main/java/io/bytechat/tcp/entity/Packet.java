@@ -10,7 +10,13 @@ import lombok.Data;
 @Data
 public abstract class Packet {
 
-    public static byte PACKET_MAGIC = (byte) 0x1;
+    public static byte PACKET_MAGIC = (byte) 1 << 0;
+
+    public static byte PACKET_REQUEST = (byte) 1 << 1;
+
+    public static byte PACKET_RESPONSE = (byte) 1 << 2;
+
+    public static byte PACKET_COMMAND = (byte) 1 << 3;
 
     private byte magic = Packet.PACKET_MAGIC;
 

@@ -52,12 +52,20 @@ public class PacketCodec extends ByteToMessageCodec<Packet> {
         if (byteBuf.readableBytes() < leastPacketLen){
             return;
         }
+        /**
+         * 标记读的索引
+         * 避免一个packet为读完的情况
+         */
         byteBuf.markReaderIndex();
         byte magic = byteBuf.readByte();
         Assert.state(magic == Packet.PACKET_MAGIC, "无效的魔数");
         byte algorithm = byteBuf.readByte();
         byte type = byteBuf.readByte();
         int length = byteBuf.readInt();
+        /**
+         * 如果可读的字节数没有整个packet的长度
+         * 重新设置读索引回到标记点
+         */
         if (byteBuf.readableBytes() < length){
             byteBuf.resetReaderIndex();
             return;
@@ -71,7 +79,11 @@ public class PacketCodec extends ByteToMessageCodec<Packet> {
 
     }
 
+    /**
+     * 检查是否符合packet的定义
+     * @return
+     */
     private boolean checkPacket() {
-        return false;
+        return true;
     }
 }
