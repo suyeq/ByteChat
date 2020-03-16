@@ -6,6 +6,7 @@ import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.text.StrFormatter;
 import cn.hutool.core.util.StrUtil;
 import io.bytechat.init.InitAble;
+import io.bytechat.init.InitOrder;
 import io.bytechat.lang.config.BaseConfig;
 import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.lang.util.MultipleUtil;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 请求处理器上下文
  */
 @Slf4j
+@InitOrder(1)
 public class RequestProcessorContext implements InitAble {
 
     private static AtomicBoolean init = new AtomicBoolean(false);
