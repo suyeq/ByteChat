@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 /**
  * @author : denglinhai
  * @date : 19:20 2020/3/2
- * 请求处理器
+ * 请求业务处理器
  */
 public interface RequestProcessor {
 

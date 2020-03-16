@@ -3,8 +3,12 @@ package io.bytechat.server;
 import io.bytechat.lang.exception.ExceptionEnum;
 import io.bytechat.lang.exception.ProtocolException;
 import io.bytechat.server.channel.ChannelListener;
+import io.bytechat.tcp.codec.PacketCodec;
+import io.bytechat.tcp.entity.Packet;
+import io.bytechat.tcp.handle.PacketHandle;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,8 +37,8 @@ public class ProtocolDispatcher extends ByteToMessageDecoder {
         int readerIndex = byteBuf.readerIndex();
         int magic1 = byteBuf.getByte(readerIndex);
         int magic2 = byteBuf.getByte(readerIndex + 1);
-        if (isTcp()){
-            //
+        if (isTcp(magic1)){
+            dispatcherToPacket(channelHandlerContext);
         }else {
             //未知的协议
             byteBuf.clear();
@@ -43,8 +47,17 @@ public class ProtocolDispatcher extends ByteToMessageDecoder {
         }
     }
 
-    private boolean isTcp() {
-        return false;
+    private void dispatcherToPacket(ChannelHandlerContext channelHandlerContext) {
+        ChannelPipeline pipeline = channelHandlerContext.pipeline();
+        pipeline.addLast(new PacketCodec());
+        pipeline.addLast(PacketHandle.newInstance(channelListener));
+        //移除自身分发器，不然每次发送数据都会分发协议
+        pipeline.remove(this);
+        pipeline.fireChannelActive();
+    }
+
+    private boolean isTcp(int magic) {
+        return magic == Packet.PACKET_MAGIC;
     }
 
 }

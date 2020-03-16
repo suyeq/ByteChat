@@ -1,6 +1,7 @@
 package io.bytechat;
 
 import cn.hutool.core.lang.Assert;
+import io.bytechat.init.Initializer;
 import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.lang.config.ThreadPoolConfig;
 import io.bytechat.lang.exception.ConfigException;
@@ -28,5 +29,6 @@ public class App
 //        }
 //        System.out.println("lala");
         System.out.println(0x1);
+        Initializer.init();
     }
 }

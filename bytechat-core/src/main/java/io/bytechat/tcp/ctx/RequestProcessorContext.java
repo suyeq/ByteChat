@@ -41,6 +41,10 @@ public class RequestProcessorContext implements InitAble {
 
     }
 
+    public static RequestProcessorContext getInstance() {
+        return Singleton.get(RequestProcessorContext.class);
+    }
+
     @Override
     public void init() {
         doInitRequestProcessor();

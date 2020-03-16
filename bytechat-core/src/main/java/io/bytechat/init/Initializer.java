@@ -29,14 +29,14 @@ public final class Initializer {
 
     public static void init(){
         if (!initialized.compareAndSet(false, true)){
-            log.error("[Initializer] only init once");
+            log.error("Initializer只能初始化一次");
             return;
         }
         try {
             BaseConfig baseConfig = ConfigFactory.getConfig(BaseConfig.class);
             Set<Class<?>> classSet = ClassScaner.scanPackageBySuper(baseConfig.basePackage(), InitAble.class);
             if (CollectionUtil.isEmpty(classSet)) {
-                log.info("[Initializer] No InitAble found");
+                log.info("Initializer没有发现其他InitAble");
                 return;
             }
             List<OrderWrapper> initList = new ArrayList<>();
@@ -48,21 +48,21 @@ public final class Initializer {
                     Constructor<?> constructor = clazz.getDeclaredConstructor();
                     constructor.setAccessible(true);
                     InitAble initAble = (InitAble) constructor.newInstance();
-                    log.info("[Initializer] Found InitAble=[{}]", initAble.getClass().getCanonicalName());
+                    log.info("[Initializer]找到InitAble=[{}]", initAble.getClass().getCanonicalName());
                     insertSorted(initList, initAble);
                 } catch (Exception e) {
-                    log.warn("[Initializer] Prepare InitAble failed", e);
+                    log.warn("[Initializer]加载InitAble=[{}]失败", e);
                 }
             }
             for (OrderWrapper wrapper : initList) {
                 // 执行每个加载器的加载
                 wrapper.initAble.init();
-                log.info("[Initializer] Initialized [{}] with order={}", wrapper.initAble.getClass().getCanonicalName(), wrapper.order);
+                log.info("[Initializer] 初始化 [{}] 和 order={}", wrapper.initAble.getClass().getCanonicalName(), wrapper.order);
             }
         } catch (Exception e) {
-            log.warn("[Initializer] Init failed", e);
+            log.warn("[Initializer] 初始化失败：{}", e);
         } catch (Error error) {
-            log.warn("[Initializer] Init failed with fatal error", error);
+            log.warn("[Initializer] 由于error加载失败：{}", error);
             throw error;
         }
     }
