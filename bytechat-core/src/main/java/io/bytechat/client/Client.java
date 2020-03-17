@@ -1,6 +1,9 @@
 package io.bytechat.client;
 
 import io.bytechat.tcp.entity.Packet;
+import io.netty.util.concurrent.CompleteFuture;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author : denglinhai
@@ -15,8 +18,9 @@ public interface Client {
 
     /**
      * 发送请求
-     * @param packet
+     * @param request
+     * @return
      */
-    void sendRequest(Packet packet);
+    CompletableFuture<Packet> sendRequest(Packet request);
 
 }

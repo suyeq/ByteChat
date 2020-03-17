@@ -5,15 +5,21 @@ import com.sun.corba.se.internal.CosNaming.BootstrapServer;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
 import io.bytechat.tcp.entity.Packet;
+import io.bytechat.tcp.entity.Payload;
+import io.bytechat.tcp.factory.PacketFactory;
+import io.bytechat.tcp.factory.PayloadFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.CompleteFuture;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author : denglinhai
@@ -22,10 +28,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GenericClient implements Client {
 
+    private Channel channel;
+
     private ServerAttr serverAttr;
+
+    private volatile boolean connect;
 
     public GenericClient(ServerAttr serverAttr){
         Assert.notNull(serverAttr, "serverAttr不能为空");
+        this.connect = false;
         this.serverAttr = serverAttr;
         Initializer.init();
     }
@@ -50,8 +61,9 @@ public class GenericClient implements Client {
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
-                Channel channel = channelFuture.channel();
+                channel = channelFuture.channel();
                 if (future.isSuccess()){
+                    connect = true;
                     log.info("[{}] 已经连上服务器{}", this.getClass().getSimpleName(), serverAttr);
                 }else {
                     log.info("[{}]连接失败,原因{}", this.getClass().getSimpleName(), future.cause());
@@ -61,7 +73,25 @@ public class GenericClient implements Client {
     }
 
     @Override
-    public void sendRequest(Packet packet) {
-
+    public CompletableFuture<Packet> sendRequest(Packet request) {
+        CompletableFuture<Packet> promise = new CompletableFuture<Packet>();
+        if (!connect){
+            String msg = "客户端无需开启两次";
+            log.error(msg);
+            Payload response = PayloadFactory.newErrorPayload(400, msg);
+            promise.complete(PacketFactory.newResponsePacket(response, request.getId()));
+        }
+        ChannelFuture channelFuture = channel.writeAndFlush(request);
+        channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
+            @Override
+            public void operationComplete(Future<? super Void> future) throws Exception {
+                if (future.isSuccess()){
+                    log.info("[{}]消息发送完毕", request);
+                }else {
+                    //...
+                }
+            }
+        });
+        return promise;
     }
 }
