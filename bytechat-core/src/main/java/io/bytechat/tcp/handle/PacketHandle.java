@@ -55,7 +55,7 @@ public class PacketHandle extends ChannelInboundHandlerAdapter{
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof Packet){
             Packet packet = (Packet) msg;
-            System.out.println(packet.toString());
+            log.info("收到消息{}", packet);
             if (packet.getType() == Packet.PACKET_REQUEST){
                 onRequest(ctx, packet);
             }else{

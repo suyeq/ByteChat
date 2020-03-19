@@ -32,4 +32,10 @@ public class PacketFactory {
         packet.setCommand(command);
         return packet;
     }
+
+    public static Packet newPingRequestPacket(){
+        Request request = new Request();
+        request.setServiceName("ping");
+        return PacketFactory.newRequestPacket(request, 1);
+    }
 }

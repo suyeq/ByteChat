@@ -1,5 +1,7 @@
 package io.bytechat.client;
 
+import io.bytechat.lang.config.BaseConfig;
+import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.tcp.codec.PacketCodec;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -20,6 +22,8 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeline = socketChannel.pipeline();
+        BaseConfig config = ConfigFactory.getConfig(BaseConfig.class);
+        pipeline.addLast(new HealthyChecker(config.pingInterval(), 3, client));
         pipeline.addLast(new PacketCodec());
         pipeline.addLast(new ClientHandle());
     }

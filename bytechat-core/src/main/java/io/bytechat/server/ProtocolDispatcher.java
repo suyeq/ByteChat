@@ -1,5 +1,7 @@
 package io.bytechat.server;
 
+import io.bytechat.lang.config.BaseConfig;
+import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.lang.exception.ExceptionEnum;
 import io.bytechat.lang.exception.ProtocolException;
 import io.bytechat.server.channel.ChannelListener;
@@ -11,6 +13,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
+import org.aeonbits.owner.Config;
 
 import java.util.List;
 
@@ -49,6 +52,8 @@ public class ProtocolDispatcher extends ByteToMessageDecoder {
 
     private void dispatcherToPacket(ChannelHandlerContext channelHandlerContext) {
         ChannelPipeline pipeline = channelHandlerContext.pipeline();
+        BaseConfig config = ConfigFactory.getConfig(BaseConfig.class);
+        pipeline.addLast(new IdleStateChecker(config.readIdlTime()));
         pipeline.addLast(new PacketCodec());
         pipeline.addLast(PacketHandle.newInstance(channelListener));
         //移除自身分发器，不然每次发送数据都会分发协议

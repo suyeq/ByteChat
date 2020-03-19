@@ -23,4 +23,18 @@ public interface BaseConfig extends Config {
      */
     @DefaultValue("8848")
     int serverPort();
+
+    /**
+     * 最大读空闲时长
+     * @return
+     */
+    @DefaultValue("4")
+    int readIdlTime();
+
+    /**
+     * 心跳检测时长
+     * @return
+     */
+    @DefaultValue("3")
+    int pingInterval();
 }
