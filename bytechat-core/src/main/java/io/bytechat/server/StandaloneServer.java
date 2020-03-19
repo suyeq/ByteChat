@@ -1,6 +1,7 @@
 package io.bytechat.server;
 
 import io.bytechat.server.channel.ChannelListener;
+import io.bytechat.server.channel.DefaultChannelListener;
 
 /**
  * @author : denglinhai
@@ -15,5 +16,9 @@ public class StandaloneServer extends AbstractServer {
 
     public StandaloneServer(Integer serverPort, ChannelListener channelListener){
         super(serverPort, channelListener);
+    }
+
+    public static void main(String[] args) {
+        new StandaloneServer(8899, DefaultChannelListener.newInstance()).start();
     }
 }

@@ -1,5 +1,9 @@
 package io.bytechat.executor;
 
+import io.netty.util.concurrent.Promise;
+
+import java.util.concurrent.Future;
+
 /**
  * @author : denglinhai
  * @date : 18:38 2020/2/25
@@ -12,4 +16,12 @@ public interface Executor<T> {
      * @return
      */
     T execute(Object... task);
+
+    /**
+     * 异步执行任务
+     * @param promise
+     * @param request
+     * @return
+     */
+    Future<T> asyncExecute(Promise<T> promise, Object... request);
 }

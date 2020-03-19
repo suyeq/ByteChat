@@ -86,7 +86,7 @@ public abstract class AbstractServer implements Server{
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                 long spend = System.currentTimeMillis() - start;
                 if (channelFuture.isSuccess()){
-                    log.info("{}服务成功，端口号[{}]，花费{}ms", this.getClass().getSimpleName(), serverAttr.getPort(), spend);
+                    log.info("{}服务启动成功，端口号[{}]，花费{}ms", this.getClass().getSimpleName(), serverAttr.getPort(), spend);
                 }
             }
         });

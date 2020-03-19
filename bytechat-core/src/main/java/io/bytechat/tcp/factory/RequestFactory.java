@@ -12,7 +12,7 @@ public class RequestFactory {
 
     public static Request newRequest(String serviceName, String methodName, Map<String, Object> params){
         Request request = new Request();
-        request.setMethodName(serviceName);
+        request.setServiceName(serviceName);
         request.setMethodName(methodName);
         request.setParams(params);
         return request;

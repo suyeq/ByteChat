@@ -4,9 +4,11 @@ import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.lang.config.ThreadPoolConfig;
 import io.bytechat.lang.exception.ConfigException;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +32,25 @@ public abstract class AbstractExecutor<T> implements Executor<T>{
     @Override
     public T execute(Object... task){
         return doExecute(task);
+    }
+
+    @Override
+    public Future<T> asyncExecute(Promise<T> promise, Object... request){
+        if (promise == null){
+            throw new NullPointerException("promise 不能为空");
+        }
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    T response = doExecute(request);
+                    promise.setSuccess(response);
+                }catch (Exception e){
+                    promise.setFailure(e);
+                }
+            }
+        });
+        return promise;
     }
 
     /**

@@ -13,6 +13,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.CompleteFuture;
 import io.netty.util.concurrent.Future;
@@ -48,12 +49,12 @@ public class GenericClient implements Client {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
-                .handler(new LoggingHandler())
+                .handler(new LoggingHandler(LogLevel.INFO))
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline pipeline = socketChannel.pipeline();
-                        pipeline.addLast(new ClientHandle());
+                        pipeline.addLast(new ClientInitializer(GenericClient.this));
                     }
                 });
 
@@ -64,7 +65,7 @@ public class GenericClient implements Client {
                 channel = channelFuture.channel();
                 if (future.isSuccess()){
                     connect = true;
-                    log.info("[{}] 已经连上服务器{}", this.getClass().getSimpleName(), serverAttr);
+                    log.info("[{}]已经连上服务器{}", this.getClass().getSimpleName(), serverAttr);
                 }else {
                     log.info("[{}]连接失败,原因{}", this.getClass().getSimpleName(), future.cause());
                 }
@@ -76,10 +77,12 @@ public class GenericClient implements Client {
     public CompletableFuture<Packet> sendRequest(Packet request) {
         CompletableFuture<Packet> promise = new CompletableFuture<Packet>();
         if (!connect){
-            String msg = "客户端无需开启两次";
+            String msg = "客户端尚未连接服务器";
             log.error(msg);
+            System.out.println(msg);
             Payload response = PayloadFactory.newErrorPayload(400, msg);
             promise.complete(PacketFactory.newResponsePacket(response, request.getId()));
+            return promise;
         }
         ChannelFuture channelFuture = channel.writeAndFlush(request);
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {

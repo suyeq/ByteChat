@@ -55,12 +55,17 @@ public class PacketHandle extends ChannelInboundHandlerAdapter{
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof Packet){
             Packet packet = (Packet) msg;
+            System.out.println(packet.toString());
             if (packet.getType() == Packet.PACKET_REQUEST){
                 onRequest(ctx, packet);
             }else{
-
+                onResponse(ctx, packet);
             }
         }
+    }
+
+    private void onResponse(ChannelHandlerContext ctx, Packet packet) {
+
     }
 
     private void onRequest(ChannelHandlerContext ctx, Packet packet) {
