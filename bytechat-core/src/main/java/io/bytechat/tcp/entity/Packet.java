@@ -37,10 +37,18 @@ public abstract class Packet {
 
     private byte algorithm = algorithm();
 
+    private boolean isAsyncHandle = isAsyncHandle();
+
     /**
      * 哪种序列化协议
      * @return
      */
     public abstract byte algorithm();
+
+    /**
+     * 是否采用异步处理
+     * @return
+     */
+    public abstract boolean isAsyncHandle();
 
 }

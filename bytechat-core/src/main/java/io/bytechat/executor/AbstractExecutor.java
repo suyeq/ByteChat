@@ -4,11 +4,11 @@ import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.lang.config.ThreadPoolConfig;
 import io.bytechat.lang.exception.ConfigException;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 

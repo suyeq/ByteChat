@@ -11,7 +11,9 @@ import io.bytechat.tcp.executor.PacketExecutor;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * @author : denglinhai
@@ -69,8 +71,24 @@ public class PacketHandle extends ChannelInboundHandlerAdapter{
     }
 
     private void onRequest(ChannelHandlerContext ctx, Packet packet) {
-        Packet response = executor.execute(ctx, packet);
-        writeResponse(ctx, response);
+        //异步执行
+        if (packet.isAsyncHandle()){
+            EventExecutor channelExecutor = ctx.executor();
+            Promise<Packet> promise = new DefaultPromise<>(channelExecutor);
+            Future<Packet> future = executor.asyncExecute(promise, ctx, packet);
+            future.addListener(new GenericFutureListener<Future<? super Packet>>() {
+                @Override
+                public void operationComplete(Future<? super Packet> future) throws Exception {
+                    if (future.isSuccess()){
+                        Packet response = (Packet) future.get();
+                        writeResponse(ctx, response);
+                    }
+                }
+            });
+        }else {
+            Packet response = executor.execute(ctx, packet);
+            writeResponse(ctx, response);
+        }
     }
 
     private void writeResponse(ChannelHandlerContext ctx, Packet response) {

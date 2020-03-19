@@ -12,4 +12,9 @@ public class DefaultPacket extends Packet {
     public byte algorithm() {
         return SerializeAlgorithmEnum.FAST_JSON.getAlgorithm();
     }
+
+    @Override
+    public boolean isAsyncHandle() {
+        return false;
+    }
 }

@@ -1,8 +1,9 @@
 package io.bytechat.executor;
 
+import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
 
-import java.util.concurrent.Future;
+
 
 /**
  * @author : denglinhai

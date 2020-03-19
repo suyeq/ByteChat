@@ -36,6 +36,8 @@ public class PacketFactory {
     public static Packet newPingRequestPacket(){
         Request request = new Request();
         request.setServiceName("ping");
-        return PacketFactory.newRequestPacket(request, 1);
+        Packet packet = PacketFactory.newRequestPacket(request, 1);
+        packet.setAsyncHandle(false);
+        return packet;
     }
 }
