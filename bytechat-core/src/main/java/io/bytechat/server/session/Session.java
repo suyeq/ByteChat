@@ -1,5 +1,6 @@
 package io.bytechat.server.session;
 
+import io.bytechat.server.channel.ChannelType;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 
@@ -23,6 +24,12 @@ public interface Session {
     ChannelId channelId();
 
     /**
+     * 返回channelType
+     * @return
+     */
+    ChannelType channelType();
+
+    /**
      * 返回userId
      * @return
      */
@@ -34,6 +41,12 @@ public interface Session {
      * @param userId
      */
     void bind(ChannelId channelId, long userId);
+
+    /**
+     * 写入数据
+     * @param msg
+     */
+    void writeAndFlush(Object msg);
 
 
 }

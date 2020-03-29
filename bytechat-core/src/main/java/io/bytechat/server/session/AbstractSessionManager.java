@@ -4,10 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import io.bytechat.server.channel.ChannelType;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,6 +61,17 @@ public abstract class AbstractSessionManager implements SessionManager{
     @Override
     public Session getSession(ChannelId channelId) {
         return null;
+    }
+
+    @Override
+    public boolean exists(ChannelType channelType, long userId){
+        List<Session> sessions = CollectionUtil.newArrayList(sessionMap.values());
+        if (CollectionUtil.isEmpty(sessions)){
+            return false;
+        }
+        Session session = sessions.stream().filter(e -> e.userId() == userId
+                && e.channelType() == channelType).findFirst().orElse(null);
+        return session != null;
     }
 
     /**

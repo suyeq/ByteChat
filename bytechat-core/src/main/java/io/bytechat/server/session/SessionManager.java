@@ -1,5 +1,6 @@
 package io.bytechat.server.session;
 
+import io.bytechat.server.channel.ChannelType;
 import io.netty.channel.ChannelId;
 
 /**
@@ -41,6 +42,14 @@ public interface SessionManager {
      * @return
      */
     Session getSession(ChannelId channelId);
+
+    /**
+     * 判断是否已绑定
+     * @param channelType
+     * @param userId
+     * @return
+     */
+    boolean exists(ChannelType channelType, long userId);
 
 
 }

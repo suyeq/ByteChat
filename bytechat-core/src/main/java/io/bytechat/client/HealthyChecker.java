@@ -1,6 +1,6 @@
 package io.bytechat.client;
 
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Appinfo;
+
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.factory.PacketFactory;
 import io.netty.channel.Channel;

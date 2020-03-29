@@ -5,9 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import io.bytechat.lang.exception.ExceptionEnum;
 import io.bytechat.lang.exception.SessionException;
 import io.bytechat.server.channel.ChannelHelper;
+import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.channel.ChannelWrapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author : denglinhai
  * @date : 22:25 2020/2/26
  */
+@Slf4j
 public class DefaultSession implements Session {
 
     private long userId;
@@ -24,6 +27,8 @@ public class DefaultSession implements Session {
     private AtomicBoolean bind;
 
     private String sessionId;
+
+    private ChannelType channelType;
 
     public DefaultSession(String sessionId){
         this.sessionId = sessionId;
@@ -37,6 +42,19 @@ public class DefaultSession implements Session {
             Assert.notNull(channelWrapper, "channelWrapper不能为空");
             this.userId = userId;
             this.channel = channelWrapper.getChannel();
+            this.channelType = channelWrapper.getChannelType();
+        }
+    }
+
+    @Override
+    public void writeAndFlush(Object msg) {
+        if (!bind.get()){
+            throw new IllegalStateException("session未绑定channel");
+        }
+        if (msg != null){
+            channel.writeAndFlush(msg);
+        }else {
+            log.info("写入信息为空,userId={},channel={}", userId, channel);
         }
     }
 
@@ -54,6 +72,14 @@ public class DefaultSession implements Session {
             throw new SessionException(ExceptionEnum.SESSION_EXCEPTION_NOT_BIND);
         }
         return channel.id();
+    }
+
+    @Override
+    public ChannelType channelType() {
+        if (!bind.get()){
+            throw new SessionException(ExceptionEnum.SESSION_EXCEPTION_NOT_BIND);
+        }
+        return channelType;
     }
 
     @Override

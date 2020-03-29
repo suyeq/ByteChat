@@ -1,6 +1,8 @@
 package io.bytechat.tcp.factory;
 
 
+import io.bytechat.lang.id.IdFactory;
+import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.tcp.entity.*;
 
 /**
@@ -8,6 +10,8 @@ import io.bytechat.tcp.entity.*;
  * @date : 14:48 2020/2/29
  */
 public class PacketFactory {
+
+    private static IdFactory idFactory = MemoryIdFactory.newInstance();
 
     public static Packet newRequestPacket(Request request, long id){
         Packet packet = new DefaultPacket();
@@ -36,7 +40,7 @@ public class PacketFactory {
     public static Packet newPingRequestPacket(){
         Request request = new Request();
         request.setServiceName("ping");
-        Packet packet = PacketFactory.newRequestPacket(request, 1);
+        Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
         packet.setAsyncHandle(false);
         return packet;
     }

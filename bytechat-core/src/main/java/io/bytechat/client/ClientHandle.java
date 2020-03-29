@@ -36,7 +36,6 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof Packet){
             Packet packet = (Packet) msg;
-            System.out.println(packet);
             if (packet.getType() == Packet.PACKET_REQUEST){
                 onRequest(ctx, packet);
             }else if (packet.getType() == Packet.PACKET_RESPONSE){
@@ -45,7 +44,6 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
                 onCommand(ctx, packet);
             }
         }
-        ctx.fireChannelRead(msg);
     }
 
     @Override

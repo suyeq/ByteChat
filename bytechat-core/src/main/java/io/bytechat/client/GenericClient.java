@@ -1,13 +1,13 @@
 package io.bytechat.client;
 
 import cn.hutool.core.lang.Assert;
-import com.sun.corba.se.internal.CosNaming.BootstrapServer;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.tcp.factory.PayloadFactory;
+import io.bytechat.tcp.factory.PendingPackets;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -79,11 +79,11 @@ public class GenericClient implements Client {
         if (!connect){
             String msg = "客户端尚未连接服务器";
             log.error(msg);
-            System.out.println(msg);
             Payload response = PayloadFactory.newErrorPayload(400, msg);
             promise.complete(PacketFactory.newResponsePacket(response, request.getId()));
             return promise;
         }
+        PendingPackets.add(request.getId(), promise);
         ChannelFuture channelFuture = channel.writeAndFlush(request);
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
@@ -91,7 +91,10 @@ public class GenericClient implements Client {
                 if (future.isSuccess()){
                     log.info("[{}]消息发送完毕", request);
                 }else {
-                    //...
+                    CompletableFuture<Packet> promise = PendingPackets.remove(request.getId());
+                    if (promise != null){
+                        promise.completeExceptionally(future.cause());
+                    }
                 }
             }
         });
