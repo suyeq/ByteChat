@@ -6,6 +6,7 @@ import io.bytechat.server.channel.ChannelHelper;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.channel.ChannelWrapper;
 import io.bytechat.server.session.DefaultSessionManager;
+import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
 import io.bytechat.session.ImSession;
@@ -54,6 +55,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
     private void boundSession(Channel channel, User user) {
         ImSession imSession = (ImSession) sessionManager.newSession();
         sessionManager.bind(imSession, channel.id(), user.getUserId());
+        SessionHelper.makeOnline(channel, imSession.sessionId());
         //广播上线消息
         //.....
     }

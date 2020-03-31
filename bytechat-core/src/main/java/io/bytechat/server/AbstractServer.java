@@ -1,6 +1,7 @@
 package io.bytechat.server;
 
 import cn.hutool.core.util.ObjectUtil;
+import io.bytechat.init.Initializer;
 import io.bytechat.lang.config.BaseConfig;
 import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.server.channel.ChannelListener;
@@ -50,6 +51,7 @@ public abstract class AbstractServer implements Server{
     @Override
     public void start(){
         if (start.compareAndSet(false, true)){
+            Initializer.init();
             doStart(serverAttr);
         }
     }
