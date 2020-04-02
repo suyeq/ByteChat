@@ -8,13 +8,12 @@
     <artifactId>bytechat</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>bytechat</name>
 
     <modules>
       <module>bytechat-core</module>
+      <module>bytechat-server</module>
       <module>bytechat-client</module>
       <module>bytechat-im</module>
-      <module>bytechat-server</module>
     </modules>
 
     <properties>

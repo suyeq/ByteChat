@@ -4,10 +4,13 @@ import io.bytechat.tcp.ctx.RequestProcessorContext;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PacketFactory;
+import io.bytechat.tcp.factory.PendingPackets;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author : denglinhai
@@ -53,16 +56,20 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
     }
 
     private void onCommand(ChannelHandlerContext ctx, Packet packet) {
-        Payload payload = requestProcessorContext.process(ctx, packet.getRequest());
-        Packet response = PacketFactory.newResponsePacket(payload, packet.getId());
-        writeResponse(ctx, response);
+
     }
 
     private void onResponse(ChannelHandlerContext ctx, Packet packet) {
-
+        CompletableFuture<Packet> pending = PendingPackets.remove(packet.getId());
+        if (pending != null) {
+            pending.complete(packet);
+        }
     }
 
     private void onRequest(ChannelHandlerContext ctx, Packet packet) {
+        Payload payload = requestProcessorContext.process(ctx, packet.getRequest());
+        Packet response = PacketFactory.newResponsePacket(payload, packet.getId());
+        writeResponse(ctx, response);
     }
 
     private void writeResponse(ChannelHandlerContext ctx, Packet response) {

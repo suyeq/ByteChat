@@ -47,6 +47,7 @@ public class RequestProcessorContext implements InitAble {
 
     @Override
     public void init() {
+        log.info("开始初始化请求业务处理器");
         doInitRequestProcessor();
     }
 

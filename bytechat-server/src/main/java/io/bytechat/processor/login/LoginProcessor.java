@@ -10,6 +10,7 @@ import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
 import io.bytechat.session.ImSession;
+import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PayloadFactory;
 import io.bytechat.tcp.processor.AbstractRequestProcessor;
@@ -31,7 +32,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
     private SessionManager sessionManager;
 
     public LoginProcessor(){
-        sessionManager = DefaultSessionManager.newInstance();
+        sessionManager = ImSessionManager.getInstance();
     }
 
     @Override

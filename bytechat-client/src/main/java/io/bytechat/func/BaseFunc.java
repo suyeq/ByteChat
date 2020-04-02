@@ -30,7 +30,7 @@ public class BaseFunc {
         Payload payload;
         try{
             CompletableFuture<Packet> promise = client.sendRequest(packet);
-            payload = promise.get(3, TimeUnit.SECONDS).getPayload();
+            payload = promise.get(5, TimeUnit.SECONDS).getPayload();
         }catch (Exception e){
             payload = PayloadFactory.newErrorPayload(400, "执行命令超时");
             log.error("执行命令错误,cause={}", e.getCause());

@@ -11,9 +11,6 @@
 
     <artifactId>bytechat-core</artifactId>
 
-    <name>bytechat-core</name>
-
-
     <dependencies>
         <dependency>
             <groupId>org.aeonbits.owner</groupId>

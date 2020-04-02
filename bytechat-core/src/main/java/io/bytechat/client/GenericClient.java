@@ -89,7 +89,7 @@ public class GenericClient implements Client {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
                 if (future.isSuccess()){
-                    log.info("[{}]消息发送完毕", request);
+                    log.info("[{}]消息发送完毕", request.getId());
                 }else {
                     CompletableFuture<Packet> promise = PendingPackets.remove(request.getId());
                     if (promise != null){

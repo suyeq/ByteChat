@@ -18,7 +18,4 @@ public class StandaloneServer extends AbstractServer {
         super(serverPort, channelListener);
     }
 
-    public static void main(String[] args) {
-        new StandaloneServer(8899, DefaultChannelListener.newInstance()).start();
-    }
 }
