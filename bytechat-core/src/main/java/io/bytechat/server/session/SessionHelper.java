@@ -26,4 +26,13 @@ public class SessionHelper {
         channel.attr(SESSION_ID).set(sessionId);
         log.info("[sessionId]={}上线了", sessionId);
     }
+
+    /**
+     * 根据channel返回sessionId
+     * @param channel
+     * @return
+     */
+    public static String getSessionId(Channel channel){
+        return channel.hasAttr(SESSION_ID) ? channel.attr(SESSION_ID).get() : null;
+    }
 }

@@ -29,9 +29,9 @@ public class PacketFactory {
         return packet;
     }
 
-    public static Packet newCommandPacket(Command command, long id){
+    public static Packet newCommandPacket(Command command){
         Packet packet = new DefaultPacket();
-        packet.setId(id);
+        //packet.setId(id);
         packet.setType(Packet.PACKET_COMMAND);
         packet.setCommand(command);
         return packet;

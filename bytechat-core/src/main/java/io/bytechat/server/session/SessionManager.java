@@ -38,10 +38,10 @@ public interface SessionManager {
 
     /**
      * 获取一个session
-     * @param channelId
+     * @param sessionId
      * @return
      */
-    Session getSession(ChannelId channelId);
+    Session getSession(String sessionId);
 
     /**
      * 判断是否已绑定
@@ -50,6 +50,14 @@ public interface SessionManager {
      * @return
      */
     boolean exists(ChannelType channelType, long userId);
+
+    /**
+     * 根据userId与channelType寻找session
+     * @param userId
+     * @param channelType
+     * @return
+     */
+    Session getSessionByUserIdAndChannelType(long userId, ChannelType channelType);
 
 
 }

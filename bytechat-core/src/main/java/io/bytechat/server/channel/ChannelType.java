@@ -1,6 +1,8 @@
 package io.bytechat.server.channel;
 
 
+import java.util.Arrays;
+
 /**
  * @author : denglinhai
  * @date : 15:46 2020/2/26
@@ -22,5 +24,10 @@ public enum ChannelType {
 
     ChannelType(int type){
         this.type = type;
+    }
+
+    public static ChannelType getChannelType(Integer type){
+        return Arrays.stream(values())
+                .filter(e -> e.type == type).findFirst().orElse(null);
     }
 }

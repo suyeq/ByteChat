@@ -17,7 +17,7 @@ public class DefaultChannelManager implements ChannelManager {
 
     private ChannelGroup channelGroup;
 
-    private final static AttributeKey<ChannelType> CHANNEL_TYPE_ATTRIBUTE_KEY = AttributeKey.newInstance("channelType");
+    private final static AttributeKey<ChannelType> CHANNEL_TYPE = AttributeKey.newInstance("channelType");
 
     private DefaultChannelManager(){
         this.channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -31,7 +31,7 @@ public class DefaultChannelManager implements ChannelManager {
     public void addChannel(Channel channel, ChannelType channelType) {
         Assert.notNull(channel, "channel不能为空");
         Assert.notNull(channelType, "channelType不能为空");
-        channel.attr(CHANNEL_TYPE_ATTRIBUTE_KEY).set(channelType);
+        channel.attr(CHANNEL_TYPE).set(channelType);
         channelGroup.add(channel);
     }
 
@@ -45,6 +45,6 @@ public class DefaultChannelManager implements ChannelManager {
     public ChannelWrapper getChannelWrapper(ChannelId channelId) {
         Assert.notNull(channelId, "channelId不能为空");
         Channel channel = channelGroup.isEmpty() ? null : channelGroup.find(channelId);
-        return channel == null ? null : new ChannelWrapper(channel, channel.attr(CHANNEL_TYPE_ATTRIBUTE_KEY).get());
+        return channel == null ? null : new ChannelWrapper(channel, channel.attr(CHANNEL_TYPE).get());
     }
 }

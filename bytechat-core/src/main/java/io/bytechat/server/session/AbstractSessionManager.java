@@ -59,8 +59,9 @@ public abstract class AbstractSessionManager implements SessionManager{
     }
 
     @Override
-    public Session getSession(ChannelId channelId) {
-        return null;
+    public Session getSession(String sessionId) {
+        Assert.notNull(sessionId, "sessionId 不能为空");
+        return sessionMap.get(sessionId);
     }
 
     @Override
@@ -72,6 +73,16 @@ public abstract class AbstractSessionManager implements SessionManager{
         Session session = sessions.stream().filter(e -> e.userId() == userId
                 && e.channelType() == channelType).findFirst().orElse(null);
         return session != null;
+    }
+
+    @Override
+    public Session getSessionByUserIdAndChannelType(long userId, ChannelType channelType){
+        List<Session> sessions = CollectionUtil.newArrayList(sessionMap.values());
+        if (CollectionUtil.isEmpty(sessions)){
+            return null;
+        }
+        return sessions.stream().filter(e -> e.userId() == userId
+                && e.channelType() == channelType).findFirst().orElse(null);
     }
 
     /**
