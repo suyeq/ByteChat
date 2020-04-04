@@ -1,5 +1,6 @@
 package io.bytechat.client;
 
+import io.bytechat.tcp.ctx.CommandProcessorContext;
 import io.bytechat.tcp.ctx.RequestProcessorContext;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
@@ -21,8 +22,11 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
 
     private RequestProcessorContext requestProcessorContext;
 
+    private CommandProcessorContext commandProcessorContext;
+
     public ClientHandle(){
         requestProcessorContext = RequestProcessorContext.getInstance();
+        commandProcessorContext = CommandProcessorContext.getInstance();
     }
 
     @Override
@@ -56,7 +60,7 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
     }
 
     private void onCommand(ChannelHandlerContext ctx, Packet packet) {
-
+        commandProcessorContext.process(ctx, packet.getCommand());
     }
 
     private void onResponse(ChannelHandlerContext ctx, Packet packet) {

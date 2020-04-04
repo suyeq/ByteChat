@@ -29,6 +29,7 @@ import java.util.Map;
 /**
  * @author : denglinhai
  * @date : 15:12 2020/4/3
+ * 发送单点消息
  */
 @Slf4j
 @Processor(name = ImService.P2P_MSG)
@@ -59,11 +60,13 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
             log.info("{}不在线，存贮离线消息", toSession.userId());
             saveOfflineMsg();
         }else {
+            Object transferMsg;
             if (toSession.channelType() == ChannelType.TCP){
-                Packet packet = buildTransferPacketMsg(toUserId, "", null);
+                transferMsg = buildTransferPacketMsg(fromUserId, fromUserName, request);
             }else {
-
+                transferMsg = null;
             }
+            toSession.writeAndFlush(transferMsg);
             saveHistoryMsg();
         }
         return PayloadFactory.newSuccessPayload();
@@ -80,16 +83,22 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("userName", userName);
-        params.put("channelType", request.getChannelType());
+        params.put("msgType", request.getMsgType());
         params.put("content", request.getContent());
-        Command command = CommandFactory.newCommand("", params);
+        Command command = CommandFactory.newCommand(ImService.RECV_MSG, params);
         return PacketFactory.newCommandPacket(command);
     }
 
+    /**
+     * 存贮离线消息
+     */
     private void saveOfflineMsg() {
 
     }
 
+    /**
+     * 保存历史消息
+     */
     private void saveHistoryMsg(){
 
     }

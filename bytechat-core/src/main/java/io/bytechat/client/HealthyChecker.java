@@ -62,7 +62,7 @@ public class HealthyChecker extends ChannelInboundHandlerAdapter {
                 if (channel.isActive()){
                     Packet pingPacket = PacketFactory.newPingRequestPacket();
                     channel.writeAndFlush(pingPacket);
-                    log.info("[{}] 发送了一个ping消息{}", HealthyChecker.class.getSimpleName(), pingPacket);
+                    //log.info("[{}] 发送了一个ping消息{}", HealthyChecker.class.getSimpleName(), pingPacket);
                     schedulePing(ctx);
                 }
             }

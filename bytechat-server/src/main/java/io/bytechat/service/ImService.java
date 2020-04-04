@@ -9,4 +9,6 @@ public interface ImService {
     String LOGIN = "login";
 
     String P2P_MSG = "p2pMsg";
+
+    String RECV_MSG = "recvMsg";
 }

@@ -20,10 +20,12 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author : denglinhai
  * @date : 15:50 2020/3/29
+ * 登录消息处理器
  */
 @Slf4j
 @Processor(name = ImService.LOGIN)
@@ -54,8 +56,9 @@ public class LoginProcessor extends AbstractRequestProcessor {
     }
 
     private void boundSession(Channel channel, User user) {
+        Random random = new Random();
         ImSession imSession = (ImSession) sessionManager.newSession();
-        sessionManager.bind(imSession, channel.id(), user.getUserId());
+        sessionManager.bind(imSession, channel.id(), random.nextInt());
         SessionHelper.makeOnline(channel, imSession.sessionId());
         //广播上线消息
         //.....

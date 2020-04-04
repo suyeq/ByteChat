@@ -18,11 +18,8 @@ public class ClientApplication
     public static void main( String[] args ) throws InterruptedException {
         Client client= SimpleClientFactory.newInstance()
                 .newClient(ServerAttr.getLocalServer(8899));
-        BaseFunc baseFunc = new BaseFunc(client);
-        LoginFunc loginFunc = new LoginFunc(baseFunc);
         client.connect();
-        Thread.sleep(2000);
-        Payload payload = loginFunc.login("lallal", "12213");
-        System.out.println(payload);
+        ClientBootstrap cli = new ClientBootstrap(client);
+        cli.doCli();
     }
 }
