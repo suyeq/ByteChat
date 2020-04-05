@@ -58,7 +58,9 @@ public class LoginProcessor extends AbstractRequestProcessor {
     private void boundSession(Channel channel, User user) {
         Random random = new Random();
         ImSession imSession = (ImSession) sessionManager.newSession();
-        sessionManager.bind(imSession, channel.id(), random.nextInt());
+        int t = random.nextInt();
+        System.out.println("临时Id为"+t);
+        sessionManager.bind(imSession, channel.id(), t);
         SessionHelper.makeOnline(channel, imSession.sessionId());
         //广播上线消息
         //.....

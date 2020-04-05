@@ -30,9 +30,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @InitOrder(2)
 public class CommandProcessorContext implements InitAble {
 
-    private AtomicBoolean init = new AtomicBoolean(false);
+    private static AtomicBoolean init = new AtomicBoolean(false);
 
-    private Map<String, CommandProcessor> processorHolder = new ConcurrentHashMap<>();
+    private static Map<String, CommandProcessor> processorHolder = new ConcurrentHashMap<>();
 
     private CommandProcessorContext(){
 
@@ -55,6 +55,8 @@ public class CommandProcessorContext implements InitAble {
     public void process(ChannelHandlerContext channelHandlerContext, Command command){
         String requestName = MultipleUtil.unifiedProcessorName(command.getCommandName());
         CommandProcessor processor = processorHolder.get(requestName);
+        System.out.println(processorHolder.toString());
+        System.out.println(requestName);
         if (processor == null){
             log.info("请求处理器{}未发现", requestName);
             return;
@@ -74,7 +76,7 @@ public class CommandProcessorContext implements InitAble {
             return;
         }
         for (Class<?> clazz : classSet) {
-            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) || !RequestProcessor.class.isAssignableFrom(clazz)) {
+            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()) || !CommandProcessor.class.isAssignableFrom(clazz)) {
                 continue;
             }
             try {
