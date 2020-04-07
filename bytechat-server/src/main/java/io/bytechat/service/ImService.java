@@ -8,7 +8,11 @@ public interface ImService {
 
     String LOGIN = "login";
 
+    String REGISTER = "register";
+
     String P2P_MSG = "p2pMsg";
+
+    String GROUP_MSG = "groupMsg";
 
     String RECV_MSG = "recvMsg";
 }

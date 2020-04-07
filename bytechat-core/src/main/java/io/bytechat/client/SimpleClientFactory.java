@@ -26,14 +26,4 @@ public class SimpleClientFactory implements ClientFactory{
         return new GenericClient(serverAttr);
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        ServerAttr serverAttr = ServerAttr.getLocalServer(8899);
-        SimpleClientFactory simpleClientFactory = SimpleClientFactory.newInstance();
-        Client client = simpleClientFactory.newClient(serverAttr);
-        client.connect();
-        Request request = RequestFactory.newRequest("test", "ggg", null);
-        Packet packet = PacketFactory.newRequestPacket(request, 1);
-        Thread.sleep(2000);
-        client.sendRequest(packet);
-    }
 }

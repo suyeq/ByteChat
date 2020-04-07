@@ -88,9 +88,7 @@ public class GenericClient implements Client {
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
-                if (future.isSuccess()){
-                    log.info("[{}]消息发送完毕", request.getId());
-                }else {
+                if (!future.isSuccess()){
                     CompletableFuture<Packet> promise = PendingPackets.remove(request.getId());
                     if (promise != null){
                         promise.completeExceptionally(future.cause());

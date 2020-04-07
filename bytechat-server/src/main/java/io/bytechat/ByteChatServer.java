@@ -2,6 +2,7 @@ package io.bytechat;
 
 import io.bytechat.server.StandaloneServer;
 import io.bytechat.server.channel.DefaultChannelListener;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 //import org.springframework.boot.SpringApplication;
 //import org.springframework.boot.autoconfigure.SpringBootApplication;
 

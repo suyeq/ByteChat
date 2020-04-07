@@ -64,7 +64,7 @@ public class ClientBootstrap {
     }
 
     private void tip(){
-        System.out.println(Cli.NEXT);
+        System.out.print(Cli.NEXT);
     }
 
     private void p2pChat(String[] args) {

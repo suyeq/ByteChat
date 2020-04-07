@@ -24,6 +24,11 @@
             <artifactId>bytechat-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.bytechat</groupId>
+            <artifactId>bytechat-db</artifactId>
+        </dependency>
+
 <!--        <dependency>-->
 <!--            <groupId>mysql</groupId>-->
 <!--            <artifactId>mysql-connector-java</artifactId>-->

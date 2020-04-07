@@ -19,6 +19,7 @@ public class ClientApplication
         Client client= SimpleClientFactory.newInstance()
                 .newClient(ServerAttr.getLocalServer(8899));
         client.connect();
+
         ClientBootstrap cli = new ClientBootstrap(client);
         cli.doCli();
     }
