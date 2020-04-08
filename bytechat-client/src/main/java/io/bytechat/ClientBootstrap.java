@@ -4,6 +4,7 @@ import cn.hutool.core.util.NumberUtil;
 import io.bytechat.client.Client;
 import io.bytechat.func.BaseFunc;
 import io.bytechat.func.LoginFunc;
+import io.bytechat.func.RegisterFunc;
 import io.bytechat.func.SendP2pFunc;
 import io.bytechat.tcp.entity.Payload;
 
@@ -21,10 +22,13 @@ public class ClientBootstrap {
 
     private SendP2pFunc sendP2pFunc;
 
+    private RegisterFunc registerFunc;
+
     public ClientBootstrap(Client client){
         this.baseFunc = new BaseFunc(client);
         this.loginFunc = new LoginFunc(baseFunc);
         this.sendP2pFunc = new SendP2pFunc(baseFunc);
+        this.registerFunc = new RegisterFunc(baseFunc);
     }
 
 
@@ -47,6 +51,8 @@ public class ClientBootstrap {
                     login(args);break;
                 case Cli.P2P_CHAT:
                     p2pChat(args);break;
+                case Cli.REGISTER:
+                    register(args);break;
                 default:
                     showCommand();
                     break;
@@ -105,6 +111,24 @@ public class ClientBootstrap {
 
     }
 
+    private void register(String[] args) {
+        int length = 3;
+        if (length == args.length){
+            String userName = args[1];
+            String password = args[2];
+            Payload payload = registerFunc.register(userName, password);
+            if (payload.isSuccess()){
+                System.out.println("register success");
+            }else {
+                System.out.println("register failed cause: " + payload.getMsg());
+            }
+            tip();
+        }else {
+            showCommand();
+        }
+
+    }
+
     private interface Cli{
 
         String NEXT = "byteChat>";
@@ -114,5 +138,7 @@ public class ClientBootstrap {
         String LOGIN = "lo";
 
         String P2P_CHAT = "pc";
+
+        String REGISTER = "rg";
     }
 }

@@ -7,12 +7,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="bytechat-db" />
         <module name="bytechat-im" />
-        <module name="bytechat-cache" />
         <module name="bytechat-core" />
         <module name="bytechat-client" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="bytechat-cache" target="1.8" />
+      <module name="bytechat-db" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,5 +1,7 @@
 package io.bytechat.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
@@ -7,8 +9,10 @@ import lombok.Data;
  * @date : 14:04 2020/4/7
  */
 @Data
-public class Group {
+@TableName("group")
+public class GroupEntity {
 
+    @TableId("id")
     private Long groupId;
 
     private String groupName;
@@ -17,5 +21,5 @@ public class Group {
 
     private Long createTime;
 
-    private Long groupMaster;
+    private Long groupMasterId;
 }

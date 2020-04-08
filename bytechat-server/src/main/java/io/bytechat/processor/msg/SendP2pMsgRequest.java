@@ -20,4 +20,6 @@ public class SendP2pMsgRequest {
     private Integer channelType;
 
     private Byte msgType;
+
+    private Long sendTime;
 }

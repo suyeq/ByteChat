@@ -1,10 +1,8 @@
 package io.bytechat.func;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
-import io.bytechat.server.channel.ChannelType;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
@@ -18,36 +16,32 @@ import java.util.Map;
 
 /**
  * @author : denglinhai
- * @date : 15:27 2020/4/4
+ * @date : 21:40 2020/4/8
  */
 @Slf4j
-public class SendP2pFunc {
+public class RegisterFunc {
 
     private BaseFunc baseFunc;
 
     private IdFactory idFactory;
 
-    public SendP2pFunc(BaseFunc baseFunc){
-        Assert.notNull(baseFunc, "baseFunc不能为空");
+    public RegisterFunc(BaseFunc baseFunc){
+        Assert.notNull(baseFunc, "BaseFunc不能为空");
         this.baseFunc = baseFunc;
         this.idFactory = MemoryIdFactory.newInstance();
     }
 
-    public Payload sendP2pMsg(Long toUserId, Integer channelType, String msg, Byte msgType){
-        Map<String, Object> params = buildParams(toUserId, channelType, msg, msgType);
-        Request request = RequestFactory.newRequest(ImService.P2P_MSG, null, params);
+    public Payload register(String userName, String password){
+        Map<String, Object> params = buildsParams(userName, password);
+        Request request = RequestFactory.newRequest(ImService.REGISTER, null, params);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
         return baseFunc.sendRequest(packet);
     }
 
-    private Map<String, Object> buildParams(Long toUserId, Integer channelType, String msg, Byte msgType){
+    private Map<String, Object> buildsParams(String userName, String password){
         Map<String, Object> params = new HashMap<>();
-        params.put("toUserId", toUserId);
-        params.put("channelType", channelType);
-        params.put("msgType", msgType);
-        params.put("content", msg);
-        params.put("sendTime", System.currentTimeMillis());
+        params.put("userName", userName);
+        params.put("password", params);
         return params;
     }
-
 }

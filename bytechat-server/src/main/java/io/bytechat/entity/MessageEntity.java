@@ -1,5 +1,8 @@
 package io.bytechat.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -7,8 +10,11 @@ import lombok.Data;
  * @date : 13:58 2020/4/7
  */
 @Data
+@Builder
+@TableName("message")
 public class MessageEntity {
 
+    @TableId("id")
     private Long messageId;
 
     private String content;

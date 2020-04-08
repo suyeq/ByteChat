@@ -3,12 +3,16 @@ package io.bytechat.processor.msg;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import io.bytechat.entity.MessageEntity;
+import io.bytechat.entity.UserEntity;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
+import io.bytechat.service.MessageService;
+import io.bytechat.service.impl.DefaultMessageService;
 import io.bytechat.session.ImSession;
 import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Command;
@@ -39,9 +43,12 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
 
     private SessionManager sessionManager;
 
+    private MessageService messageService;
+
     public SendP2pMsgProcessor(){
         idFactory = MemoryIdFactory.newInstance();
         sessionManager = ImSessionManager.getInstance();
+        messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
     }
 
     @Override
@@ -54,11 +61,12 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         String fromUserName = session.getUserName();
         long toUserId = request.getToUserId();
         Integer toChannelType = request.getChannelType();
+        Long msgId = idFactory.nextId();
         ChannelType channelType = ChannelType.getChannelType( toChannelType == null ? 0 : toChannelType);
         ImSession toSession =(ImSession) sessionManager.getSessionByUserIdAndChannelType(toUserId, channelType);
         if (ObjectUtil.isNull(toSession)) {
             log.info("{}不在线，存贮离线消息", toSession.userId());
-            saveOfflineMsg();
+            saveOfflineMsg(fromUserId, request, msgId);
         }else {
             Object transferMsg;
             if (toSession.channelType() == ChannelType.TCP){
@@ -67,7 +75,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
                 transferMsg = null;
             }
             toSession.writeAndFlush(transferMsg);
-            saveHistoryMsg();
+            saveHistoryMsg(fromUserId, request, msgId);
         }
         return PayloadFactory.newSuccessPayload();
     }
@@ -92,14 +100,24 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
     /**
      * 存贮离线消息
      */
-    private void saveOfflineMsg() {
-
+    private void saveOfflineMsg(Long userId, SendP2pMsgRequest request, Long msgId) {
+        MessageEntity message = messageBuild(userId, request, msgId);
+        messageService.saveOfflineMsg(message);
     }
 
     /**
      * 保存历史消息
      */
-    private void saveHistoryMsg(){
+    private void saveHistoryMsg(Long userId, SendP2pMsgRequest request, Long msgId){
+        MessageEntity message = messageBuild(userId, request, msgId);
+        messageService.saveHistoryMsg(message);
+    }
 
+    private MessageEntity messageBuild(Long userId, SendP2pMsgRequest request, Long msgId){
+        MessageEntity message = MessageEntity.builder().messageId(msgId).sendUserId(userId)
+                                .recvUserId(request.getToUserId()).content(request.getContent())
+                                .msgType(request.getMsgType()).sendTime(request.getSendTime())
+                                .isGroup(0).build();
+        return message;
     }
 }

@@ -1,14 +1,16 @@
 package io.bytechat.processor.login;
 
 import cn.hutool.core.bean.BeanUtil;
-import io.bytechat.entity.User;
+import io.bytechat.utils.BaseResult;
+import io.bytechat.entity.UserEntity;
 import io.bytechat.server.channel.ChannelHelper;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.channel.ChannelWrapper;
-import io.bytechat.server.session.DefaultSessionManager;
 import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
+import io.bytechat.service.UserService;
+import io.bytechat.service.impl.DefaultUserService;
 import io.bytechat.session.ImSession;
 import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Payload;
@@ -33,8 +35,11 @@ public class LoginProcessor extends AbstractRequestProcessor {
 
     private SessionManager sessionManager;
 
+    private UserService userService;
+
     public LoginProcessor(){
         sessionManager = ImSessionManager.getInstance();
+        userService = io.bytechat.utils.BeanUtil.getBean(DefaultUserService.class);
     }
 
     @Override
@@ -42,8 +47,9 @@ public class LoginProcessor extends AbstractRequestProcessor {
         LoginRequest loginRequest = BeanUtil.mapToBean(params, LoginRequest.class, false);
         //判断是否已经登录
         Channel channel = channelHandlerContext.channel();
-        User user = new User();
-        if (true){
+        BaseResult userResult = userService.login(loginRequest.getUserName(), loginRequest.getPassword());
+        if (userResult.isSuccess()){
+            UserEntity user = (UserEntity) userResult.getContent();
             ChannelWrapper channelWrapper = ChannelHelper.getChannelWrapper(channel.id());
             ChannelType channelType = channelWrapper.getChannelType();
             boolean isReadyLogin = sessionManager.exists(channelType, user.getUserId());
@@ -52,10 +58,11 @@ public class LoginProcessor extends AbstractRequestProcessor {
             }
             boundSession(channel, user);
         }
-        return PayloadFactory.newSuccessPayload();
+        return userResult.isSuccess() ? PayloadFactory.newSuccessPayload()
+                : PayloadFactory.newErrorPayload(userResult.getCode(), userResult.getMsg());
     }
 
-    private void boundSession(Channel channel, User user) {
+    private void boundSession(Channel channel, UserEntity user) {
         Random random = new Random();
         ImSession imSession = (ImSession) sessionManager.newSession();
         int t = random.nextInt();

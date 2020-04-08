@@ -3,6 +3,7 @@ package io.bytechat.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -10,6 +11,7 @@ import lombok.Data;
  * @date : 13:29 2020/4/7
  */
 @Data
+@Builder
 @TableName("user")
 public class UserEntity {
 

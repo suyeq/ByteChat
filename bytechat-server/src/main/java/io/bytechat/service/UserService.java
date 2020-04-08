@@ -1,5 +1,7 @@
 package io.bytechat.service;
 
+import io.bytechat.utils.BaseResult;
+
 /**
  * @author : denglinhai
  * @date : 13:30 2020/4/7
@@ -12,7 +14,7 @@ public interface UserService {
      * @param password
      * @return
      */
-    long register(String userName, String password);
+    BaseResult register(String userName, String password);
 
     /**
      * 用户登录
@@ -20,7 +22,7 @@ public interface UserService {
      * @param password
      * @return
      */
-    boolean login(String userName, String password);
+    BaseResult login(String userName, String password);
 
     /**
      * 判断用户是否在线
