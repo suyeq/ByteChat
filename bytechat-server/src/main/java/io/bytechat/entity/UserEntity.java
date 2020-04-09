@@ -3,8 +3,11 @@ package io.bytechat.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * @author : denglinhai
@@ -12,7 +15,10 @@ import lombok.Data;
  */
 @Data
 @Builder
+@Accessors(chain = true)
 @TableName("user")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
     @TableId("id")

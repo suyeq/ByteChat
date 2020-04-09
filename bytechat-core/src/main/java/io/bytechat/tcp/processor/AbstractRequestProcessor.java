@@ -20,8 +20,8 @@ public abstract class AbstractRequestProcessor implements RequestProcessor {
         try{
             payload = doProcessor(channelHandlerContext, request.getParams());
         }catch (Exception e){
-            payload.setErrorMsg(0, e.getMessage());
-            log.error("处理请求出错，出错原因：{}", e.getMessage());
+            payload.setErrorMsg(0, e.getCause().toString());
+            log.error("处理请求出错，出错原因：{}", e.getCause());
         }
         return payload;
     }

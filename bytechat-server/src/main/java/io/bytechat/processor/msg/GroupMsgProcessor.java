@@ -18,11 +18,11 @@ import java.util.Map;
 @Processor(name = ImService.GROUP_MSG)
 public class GroupMsgProcessor extends AbstractRequestProcessor {
 
-    private SendP2pMsgProcessor sendP2pMsgProcessor;
-
-    public GroupMsgProcessor(){
-        this.sendP2pMsgProcessor = new SendP2pMsgProcessor();
-    }
+//    private SendP2pMsgProcessor sendP2pMsgProcessor;
+////
+////    public GroupMsgProcessor(){
+////        this.sendP2pMsgProcessor = new SendP2pMsgProcessor();
+////    }
 
     @Override
     public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {

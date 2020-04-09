@@ -8,6 +8,7 @@ import io.bytechat.server.channel.ChannelType;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -76,13 +77,18 @@ public abstract class AbstractSessionManager implements SessionManager{
     }
 
     @Override
-    public Session getSessionByUserIdAndChannelType(long userId, ChannelType channelType){
+    public Session fetchSessionByUserIdAndChannelType(long userId, ChannelType channelType){
         List<Session> sessions = CollectionUtil.newArrayList(sessionMap.values());
         if (CollectionUtil.isEmpty(sessions)){
             return null;
         }
         return sessions.stream().filter(e -> e.userId() == userId
                 && e.channelType() == channelType).findFirst().orElse(null);
+    }
+
+    @Override
+    public List<Session> fetchAllSession(){
+        return CollectionUtil.newArrayList(sessionMap.values());
     }
 
     /**

@@ -17,10 +17,8 @@ public class BaseResult {
 
     private Object content;
 
-    public BaseResult() {
-        this.success = true;
-        this.code = 200;
-        this.msg = "success";
+    private BaseResult() {
+
     }
 
     public void setErrorMessage(int code, String message) {
@@ -28,4 +26,30 @@ public class BaseResult {
         this.code = code;
         this.msg = message;
     }
+
+    public static BaseResult newSuccessResult(String msg){
+        BaseResult result = new BaseResult();
+        result.setMsg(msg);
+        result.setCode(200);
+        result.setSuccess(true);
+        return result;
+    }
+
+    public static BaseResult newSuccessResult(String msg, Object content){
+        BaseResult result = new BaseResult();
+        result.setMsg(msg);
+        result.setCode(200);
+        result.setSuccess(true);
+        result.setContent(content);
+        return result;
+    }
+
+    public static BaseResult newErrorResult(Integer code, String msg){
+        BaseResult result = new BaseResult();
+        result.setMsg(msg);
+        result.setCode(code);
+        result.setSuccess(false);
+        return result;
+    }
+
 }

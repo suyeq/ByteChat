@@ -3,6 +3,8 @@ package io.bytechat.server.session;
 import io.bytechat.server.channel.ChannelType;
 import io.netty.channel.ChannelId;
 
+import java.util.List;
+
 /**
  * @author : denglinhai
  * @date : 16:10 2020/2/27
@@ -57,7 +59,13 @@ public interface SessionManager {
      * @param channelType
      * @return
      */
-    Session getSessionByUserIdAndChannelType(long userId, ChannelType channelType);
+    Session fetchSessionByUserIdAndChannelType(long userId, ChannelType channelType);
+
+    /**
+     * 获取所有的session
+     * @return
+     */
+    List<Session> fetchAllSession();
 
 
 }

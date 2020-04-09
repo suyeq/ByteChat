@@ -1,5 +1,8 @@
 package io.bytechat.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.utils.BaseResult;
 import io.bytechat.dao.UserMapper;
@@ -21,18 +24,30 @@ public class DefaultUserService implements UserService {
 
     @Override
     public BaseResult register(String userName, String password) {
-        UserEntity user = UserEntity.builder().userName(userName)
-                          .password(password).isDelete(0)
-                          .lastUpdateTime(System.currentTimeMillis()).build();
-        int id = userMapper.insert(user);
-        BaseResult result = new BaseResult();
-        result.setSuccess(true);
-        return result;
+        if (StrUtil.isBlank(userName) || StrUtil.isBlank(password)){
+            return BaseResult.newErrorResult(400, "用户名和密码不能为空");
+        }
+        UserEntity userEntity = UserEntity.builder().userName(userName)
+                                .password(password).isDelete(0)
+                                .lastUpdateTime(System.currentTimeMillis()).build();
+        int rows = userMapper.insert(userEntity);
+        return rows > 0 ? BaseResult.newSuccessResult("注册成功", userEntity) :
+                BaseResult.newErrorResult(400,"该账号已注册");
     }
 
     @Override
     public BaseResult login(String userName, String password) {
-        return null;
+        if (StrUtil.isBlank(userName) || StrUtil.isBlank(password)){
+            return BaseResult.newErrorResult(400, "用户名和密码不能为空");
+        }
+        QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UserEntity::getUserName, userName)
+                .eq(UserEntity::getIsDelete, 0).eq(UserEntity::getPassword, password);
+        UserEntity userEntity = userMapper.selectOne(queryWrapper);
+        if (ObjectUtil.isNull(userEntity)) {
+            return BaseResult.newErrorResult(400, "用户密码错误");
+        }
+        return BaseResult.newSuccessResult("登陆成功", userEntity);
     }
 
     @Override

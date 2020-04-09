@@ -1,13 +1,15 @@
 package io.bytechat;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.NumberUtil;
+import com.alibaba.fastjson.JSON;
 import io.bytechat.client.Client;
-import io.bytechat.func.BaseFunc;
-import io.bytechat.func.LoginFunc;
-import io.bytechat.func.RegisterFunc;
-import io.bytechat.func.SendP2pFunc;
+import io.bytechat.entity.UserEntity;
+import io.bytechat.func.*;
 import io.bytechat.tcp.entity.Payload;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -18,14 +20,18 @@ public class ClientBootstrap {
 
     private BaseFunc baseFunc;
 
+    private UserFunc userFunc;
+
     private LoginFunc loginFunc;
 
     private SendP2pFunc sendP2pFunc;
 
     private RegisterFunc registerFunc;
 
+
     public ClientBootstrap(Client client){
         this.baseFunc = new BaseFunc(client);
+        this.userFunc = new UserFunc(baseFunc);
         this.loginFunc = new LoginFunc(baseFunc);
         this.sendP2pFunc = new SendP2pFunc(baseFunc);
         this.registerFunc = new RegisterFunc(baseFunc);
@@ -53,6 +59,8 @@ public class ClientBootstrap {
                     p2pChat(args);break;
                 case Cli.REGISTER:
                     register(args);break;
+                case Cli.FETCH_ONLINE_USER:
+                    fetchOnlineUser(args);
                 default:
                     showCommand();
                     break;
@@ -64,8 +72,8 @@ public class ClientBootstrap {
         System.out.println("command list");
         System.out.println("\t[rg]\t[userName ]\t[password]\t\t(register)");
         System.out.println("\t[lo]\t[userName ]\t[password]\t\t(login)");
-        System.out.println("\t[lu]\t\t\t\t\t\t\t\t(list online user)");
-        System.out.println("\t[pc]\t[toUserId]\t[message]\t\t(p2p chat)");
+        System.out.println("\t[fu]\t\t\t\t\t\t\t\t(list online user)");
+        System.out.println("\t[pc]\t[toUserId ]\t[message ]\t\t(p2p chat)");
         tip();
     }
 
@@ -129,6 +137,34 @@ public class ClientBootstrap {
 
     }
 
+    private void fetchOnlineUser(String[] args) {
+        int length = 2;
+        if (length == args.length){
+            String userId = args[1];
+            if (!NumberUtil.isLong(userId)){
+                showCommand();
+                return;
+            }
+            Payload payload = userFunc.fetchOnlineUsers(Long.parseLong(userId));
+            if (payload.isSuccess()){
+                System.out.println("userName(userId)");
+                System.out.println("-----------------");
+                List<UserEntity> userEntities =(List<UserEntity>) payload.getResult();
+                if (!CollectionUtil.isEmpty(userEntities)){
+                    for (UserEntity userEntity : userEntities){
+                        System.out.println(userEntity.getUserName()+"("+userEntity.getUserId()+")");
+                    }
+                }
+            }else {
+                System.out.println("fetch online user failed cause: " + payload.getMsg());
+            }
+            tip();
+        }else {
+            showCommand();
+        }
+
+    }
+
     private interface Cli{
 
         String NEXT = "byteChat>";
@@ -140,5 +176,7 @@ public class ClientBootstrap {
         String P2P_CHAT = "pc";
 
         String REGISTER = "rg";
+
+        String FETCH_ONLINE_USER = "fu";
     }
 }

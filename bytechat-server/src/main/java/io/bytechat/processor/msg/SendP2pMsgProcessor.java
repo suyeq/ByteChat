@@ -1,10 +1,8 @@
 package io.bytechat.processor.msg;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import io.bytechat.entity.MessageEntity;
-import io.bytechat.entity.UserEntity;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.server.channel.ChannelType;
@@ -63,7 +61,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         Integer toChannelType = request.getChannelType();
         Long msgId = idFactory.nextId();
         ChannelType channelType = ChannelType.getChannelType( toChannelType == null ? 0 : toChannelType);
-        ImSession toSession =(ImSession) sessionManager.getSessionByUserIdAndChannelType(toUserId, channelType);
+        ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(toUserId, channelType);
         if (ObjectUtil.isNull(toSession)) {
             log.info("{}不在线，存贮离线消息", toSession.userId());
             saveOfflineMsg(fromUserId, request, msgId);

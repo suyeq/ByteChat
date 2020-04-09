@@ -33,9 +33,7 @@ public class RegisterProcessor extends AbstractRequestProcessor {
     @Override
     public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
         RegisterRequest request = BeanUtil.mapToBean(params, RegisterRequest.class, false);
-        System.out.println(request.toString());
         BaseResult result = userService.register(request.getUserName(), request.getPassword());
-        System.out.println(result.toString());
         return result.isSuccess() ? PayloadFactory.newSuccessPayload() :
                 PayloadFactory.newErrorPayload(result.getCode(), result.getMsg());
     }

@@ -15,4 +15,6 @@ public interface ImService {
     String GROUP_MSG = "groupMsg";
 
     String RECV_MSG = "recvMsg";
+
+    String GET_ONLINE_USER = "getOnlineUser";
 }

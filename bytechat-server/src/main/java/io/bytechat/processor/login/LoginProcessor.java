@@ -1,6 +1,7 @@
 package io.bytechat.processor.login;
 
 import cn.hutool.core.bean.BeanUtil;
+import io.bytechat.server.ServerAttr;
 import io.bytechat.utils.BaseResult;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.server.channel.ChannelHelper;
@@ -22,7 +23,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-import java.util.Random;
+
 
 /**
  * @author : denglinhai
@@ -63,11 +64,11 @@ public class LoginProcessor extends AbstractRequestProcessor {
     }
 
     private void boundSession(Channel channel, UserEntity user) {
-        Random random = new Random();
         ImSession imSession = (ImSession) sessionManager.newSession();
-        int t = random.nextInt();
-        System.out.println("临时Id为"+t);
-        sessionManager.bind(imSession, channel.id(), t);
+        imSession.setUserName(user.getUserName());
+        imSession.setServerAddress("");
+        imSession.setServerPort(1);
+        sessionManager.bind(imSession, channel.id(), user.getUserId());
         SessionHelper.makeOnline(channel, imSession.sessionId());
         //广播上线消息
         //.....
