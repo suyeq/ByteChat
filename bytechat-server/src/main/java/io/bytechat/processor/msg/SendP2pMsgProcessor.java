@@ -91,6 +91,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         params.put("userName", userName);
         params.put("msgType", request.getMsgType());
         params.put("content", request.getContent());
+        params.put("isGroup", 0);
         Command command = CommandFactory.newCommand(ImService.RECV_MSG, params);
         return PacketFactory.newCommandPacket(command);
     }

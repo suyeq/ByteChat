@@ -138,14 +138,9 @@ public class ClientBootstrap {
     }
 
     private void fetchOnlineUser(String[] args) {
-        int length = 2;
+        int length = 1;
         if (length == args.length){
-            String userId = args[1];
-            if (!NumberUtil.isLong(userId)){
-                showCommand();
-                return;
-            }
-            Payload payload = userFunc.fetchOnlineUsers(Long.parseLong(userId));
+            Payload payload = userFunc.fetchOnlineUsers();
             if (payload.isSuccess()){
                 System.out.println("userName(userId)");
                 System.out.println("-----------------");

@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.bytechat.entity.UserEntity;
+import io.bytechat.server.session.Session;
 import io.bytechat.utils.BaseResult;
 import io.bytechat.dao.UserMapper;
 import io.bytechat.service.UserService;
@@ -54,4 +55,6 @@ public class DefaultUserService implements UserService {
     public boolean isOnline(Long userId) {
         return false;
     }
+
+
 }

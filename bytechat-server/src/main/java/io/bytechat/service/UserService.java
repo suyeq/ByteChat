@@ -1,5 +1,6 @@
 package io.bytechat.service;
 
+import io.bytechat.server.session.Session;
 import io.bytechat.utils.BaseResult;
 
 /**

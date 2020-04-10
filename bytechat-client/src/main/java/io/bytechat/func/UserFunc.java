@@ -34,13 +34,13 @@ public class UserFunc {
         this.idFactory = MemoryIdFactory.newInstance();
     }
 
-    public Payload fetchOnlineUsers(Long userId){
-        Map<String, Object> params = buildParams(userId);
-        Request request = RequestFactory.newRequest(ImService.GET_ONLINE_USER, null, params);
+    public Payload fetchOnlineUsers(){
+        Request request = RequestFactory.newRequest(ImService.GET_ONLINE_USER, null, null);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
         Payload payload = baseFunc.sendRequest(packet);
         //反序列化object对象，fastjson不会反序列化object
         List<UserEntity> userEntities = JSON.parseArray(payload.getResult().toString(), UserEntity.class);
+        //List<UserEntity> userEntities = (List<UserEntity>) payload.getResult();
         payload.setResult(userEntities);
         return payload;
     }

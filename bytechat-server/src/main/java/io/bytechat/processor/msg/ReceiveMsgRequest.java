@@ -20,4 +20,10 @@ public class ReceiveMsgRequest {
     private Byte msgType;
 
     private String content;
+
+    private Long groupId;
+
+    private Integer isGroup;
+
+    private String groupName;
 }

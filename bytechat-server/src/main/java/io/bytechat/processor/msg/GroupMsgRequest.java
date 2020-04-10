@@ -1,5 +1,6 @@
 package io.bytechat.processor.msg;
 
+import io.bytechat.server.channel.ChannelType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,8 @@ public class GroupMsgRequest {
     private String content;
 
     private Byte msgType;
+
+    private Integer channelType;
+
+    private Long sendTime;
 }

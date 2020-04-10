@@ -14,4 +14,6 @@ public class GroupUserEntity {
     private Long groupId;
 
     private Long userId;
+
+    private Long lastAckMsgId;
 }

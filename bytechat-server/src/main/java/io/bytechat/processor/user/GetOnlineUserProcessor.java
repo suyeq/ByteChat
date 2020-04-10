@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.server.session.Session;
+import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
 import io.bytechat.service.UserService;
@@ -40,11 +41,12 @@ public class GetOnlineUserProcessor extends AbstractRequestProcessor {
 
     @Override
     public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
-        GetOnlineUserRequest request = BeanUtil.mapToBean(params, GetOnlineUserRequest.class, false);
-        Long currentUserId = request.getUserId();
+        String sessionId = SessionHelper.getSessionId(channelHandlerContext.channel());
+        ImSession session = (ImSession) sessionManager.getSession(sessionId);
+        Long currentUserId = session.userId();
         List<Session> sessions = sessionManager.fetchAllSession();
         List<UserEntity> userEntities = sessions.stream()
-//                .filter(e -> e.userId() != currentUserId)
+                .filter(e -> e.userId() != currentUserId)
                 .map(e -> {
                     ImSession imSession = (ImSession) e;
                     return UserEntity.builder().userId(imSession.userId())

@@ -1,5 +1,6 @@
 package io.bytechat.service;
 
+import io.bytechat.entity.GroupEntity;
 import io.bytechat.entity.UserEntity;
 
 import java.util.List;
@@ -23,4 +24,16 @@ public interface GroupService {
      * @return
      */
     List<UserEntity> fetchUsersByGroupId(Long groupId);
+
+    /**
+     * 更新接收群消息的ack_msg_id
+     */
+    void updateGroupMsgAckId(Long userId, Long msgId);
+
+    /**
+     * 获取一个群组信息
+     * @param groupId
+     * @return
+     */
+    GroupEntity fetchGroupByGroupId(Long groupId);
 }
