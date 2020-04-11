@@ -5,9 +5,9 @@ import io.bytechat.entity.GroupEntity;
 import io.bytechat.entity.MessageEntity;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.lang.id.IdFactory;
+import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.session.Session;
-import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.GroupService;
 import io.bytechat.service.ImService;
@@ -16,7 +16,6 @@ import io.bytechat.service.UserService;
 import io.bytechat.service.impl.DefaultGroupService;
 import io.bytechat.service.impl.DefaultMessageService;
 import io.bytechat.service.impl.DefaultUserService;
-import io.bytechat.session.ImSession;
 import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Command;
 import io.bytechat.tcp.entity.Packet;
@@ -56,6 +55,7 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
         groupService = io.bytechat.utils.BeanUtil.getBean(DefaultGroupService.class);
         messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
         sessionManager = ImSessionManager.getInstance();
+        idFactory = MemoryIdFactory.newInstance();
     }
 
     @Override
@@ -69,8 +69,9 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
         for (UserEntity userEntity : userEntities){
             Integer channelType = request.getChannelType();
             ChannelType type = ChannelType.getChannelType(channelType);
-            Long userId = userEntity.getUserId();
+            Long userId = userEntity.getId();
             if (sessionManager.exists(type, userId)){
+                System.out.println(1);
                 Session toSession = sessionManager.fetchSessionByUserIdAndChannelType(userId, type);
                 toSession.writeAndFlush(transferPacket);
                 groupService.updateGroupMsgAckId(userId, msgId);

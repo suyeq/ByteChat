@@ -9,7 +9,7 @@ import lombok.Data;
  * @date : 14:04 2020/4/7
  */
 @Data
-@TableName("group")
+@TableName("groups")
 public class GroupEntity {
 
     @TableId("id")

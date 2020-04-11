@@ -1,7 +1,6 @@
 package io.bytechat.processor.login;
 
 import cn.hutool.core.bean.BeanUtil;
-import io.bytechat.server.ServerAttr;
 import io.bytechat.utils.BaseResult;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.server.channel.ChannelHelper;
@@ -53,7 +52,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
             UserEntity user = (UserEntity) userResult.getContent();
             ChannelWrapper channelWrapper = ChannelHelper.getChannelWrapper(channel.id());
             ChannelType channelType = channelWrapper.getChannelType();
-            boolean isReadyLogin = sessionManager.exists(channelType, user.getUserId());
+            boolean isReadyLogin = sessionManager.exists(channelType, user.getId());
             if (isReadyLogin){
                 return PayloadFactory.newErrorPayload(400, "该账号已经登录");
             }
@@ -68,7 +67,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
         imSession.setUserName(user.getUserName());
         imSession.setServerAddress("");
         imSession.setServerPort(1);
-        sessionManager.bind(imSession, channel.id(), user.getUserId());
+        sessionManager.bind(imSession, channel.id(), user.getId());
         SessionHelper.makeOnline(channel, imSession.sessionId());
         //广播上线消息
         //.....

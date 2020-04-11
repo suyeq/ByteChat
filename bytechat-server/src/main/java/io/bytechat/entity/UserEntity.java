@@ -22,7 +22,7 @@ import lombok.experimental.Accessors;
 public class UserEntity {
 
     @TableId("id")
-    private Long userId;
+    private Long id;
 
     private String userName;
 

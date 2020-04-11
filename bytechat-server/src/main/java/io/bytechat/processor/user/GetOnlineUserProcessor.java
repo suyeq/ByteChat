@@ -1,6 +1,5 @@
 package io.bytechat.processor.user;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.server.session.Session;
@@ -49,7 +48,7 @@ public class GetOnlineUserProcessor extends AbstractRequestProcessor {
                 .filter(e -> e.userId() != currentUserId)
                 .map(e -> {
                     ImSession imSession = (ImSession) e;
-                    return UserEntity.builder().userId(imSession.userId())
+                    return UserEntity.builder().id(imSession.userId())
                             .userName(imSession.getUserName()).build();
                 }).collect(Collectors.toList());
         Payload payload = PayloadFactory.newSuccessPayload();

@@ -55,8 +55,6 @@ public class CommandProcessorContext implements InitAble {
     public void process(ChannelHandlerContext channelHandlerContext, Command command){
         String requestName = MultipleUtil.unifiedProcessorName(command.getCommandName());
         CommandProcessor processor = processorHolder.get(requestName);
-        System.out.println(processorHolder.toString());
-        System.out.println(requestName);
         if (processor == null){
             log.info("请求处理器{}未发现", requestName);
             return;

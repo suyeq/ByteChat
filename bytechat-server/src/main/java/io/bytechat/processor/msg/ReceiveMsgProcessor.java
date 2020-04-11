@@ -21,9 +21,18 @@ public class ReceiveMsgProcessor extends AbstractCommandProcessor {
     @Override
     public void doProcessor(ChannelHandlerContext ctx, Map<String, Object> params) {
         ReceiveMsgRequest request = BeanUtil.mapToBean(params, ReceiveMsgRequest.class,false);
-        String msg = request.getContent();
-        long userId = request.getUserId();
-        String userName = request.getUserName();
-        System.out.println(String.format("%s(%d):\t%s", userName, userId, msg));
+        int isGroup = request.getIsGroup();
+        if (isGroup == 1){
+            String groupName = request.getGroupName();
+            long groupId = request.getGroupId();
+            String msg = request.getContent();
+            System.out.println(String.format("GroupMsg-%s(%d):\t%s", groupName, groupId, msg));
+        }else {
+            String msg = request.getContent();
+            long userId = request.getUserId();
+            String userName = request.getUserName();
+            System.out.println(String.format("P2pMsg-%s(%d):\t%s", userName, userId, msg));
+        }
+
     }
 }

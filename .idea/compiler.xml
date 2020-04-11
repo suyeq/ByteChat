@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="demo" />
         <module name="bytechat-im" />
         <module name="bytechat-core" />
         <module name="bytechat-client" />
@@ -15,6 +16,13 @@
     <bytecodeTargetLevel>
       <module name="bytechat-cache" target="1.8" />
       <module name="bytechat-db" target="1.8" />
+      <module name="demo" target="1.8" />
+      <module name="test" target="1.8" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="demo" options="-parameters" />
+    </option>
   </component>
 </project>

@@ -2,12 +2,10 @@ package io.bytechat;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.NumberUtil;
-import com.alibaba.fastjson.JSON;
 import io.bytechat.client.Client;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.func.*;
 import io.bytechat.tcp.entity.Payload;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import java.util.List;
 import java.util.Scanner;
@@ -28,6 +26,8 @@ public class ClientBootstrap {
 
     private RegisterFunc registerFunc;
 
+    private SendGroupMsgFunc sendGroupMsgFunc;
+
 
     public ClientBootstrap(Client client){
         this.baseFunc = new BaseFunc(client);
@@ -35,6 +35,7 @@ public class ClientBootstrap {
         this.loginFunc = new LoginFunc(baseFunc);
         this.sendP2pFunc = new SendP2pFunc(baseFunc);
         this.registerFunc = new RegisterFunc(baseFunc);
+        this.sendGroupMsgFunc = new SendGroupMsgFunc(baseFunc);
     }
 
 
@@ -61,10 +62,32 @@ public class ClientBootstrap {
                     register(args);break;
                 case Cli.FETCH_ONLINE_USER:
                     fetchOnlineUser(args);
+                case Cli.GROUP_CHAT:
+                    groupChat(args);break;
                 default:
                     showCommand();
                     break;
             }
+        }
+    }
+
+    private void groupChat(String[] args) {
+        int length = 3;
+        if (args.length >= length){
+            String groupId = args[1];
+            String message = args[2];
+            if (!NumberUtil.isLong(groupId)){
+                showCommand();
+                return;
+            }
+            Payload payload = sendGroupMsgFunc.sendGroupMsg(Long.parseLong(groupId), message, 1, (byte)1);
+            if (payload.isSuccess()){
+                System.out.println("send message success");
+            }else {
+                System.out.println("send message failed cause:"+ payload.getMsg());
+            }
+        }else {
+            showCommand();
         }
     }
 
@@ -74,6 +97,7 @@ public class ClientBootstrap {
         System.out.println("\t[lo]\t[userName ]\t[password]\t\t(login)");
         System.out.println("\t[fu]\t\t\t\t\t\t\t\t(list online user)");
         System.out.println("\t[pc]\t[toUserId ]\t[message ]\t\t(p2p chat)");
+        System.out.println("\t[gc]\t[groupId ]\t[message ]\t\t(group chat)");
         tip();
     }
 
@@ -147,7 +171,7 @@ public class ClientBootstrap {
                 List<UserEntity> userEntities =(List<UserEntity>) payload.getResult();
                 if (!CollectionUtil.isEmpty(userEntities)){
                     for (UserEntity userEntity : userEntities){
-                        System.out.println(userEntity.getUserName()+"("+userEntity.getUserId()+")");
+                        System.out.println(userEntity.getUserName()+"("+userEntity.getId()+")");
                     }
                 }
             }else {
@@ -169,6 +193,8 @@ public class ClientBootstrap {
         String LOGIN = "lo";
 
         String P2P_CHAT = "pc";
+
+        String GROUP_CHAT = "gc";
 
         String REGISTER = "rg";
 
