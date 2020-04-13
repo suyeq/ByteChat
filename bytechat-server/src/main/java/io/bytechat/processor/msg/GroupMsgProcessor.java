@@ -6,6 +6,7 @@ import io.bytechat.entity.MessageEntity;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
+import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.session.Session;
 import io.bytechat.server.session.SessionManager;
@@ -55,7 +56,7 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
         groupService = io.bytechat.utils.BeanUtil.getBean(DefaultGroupService.class);
         messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
         sessionManager = ImSessionManager.getInstance();
-        idFactory = MemoryIdFactory.newInstance();
+        idFactory = SnowflakeIdFactory.getInstance();
     }
 
     @Override

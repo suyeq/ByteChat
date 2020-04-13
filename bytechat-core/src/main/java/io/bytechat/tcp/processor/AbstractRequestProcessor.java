@@ -21,7 +21,7 @@ public abstract class AbstractRequestProcessor implements RequestProcessor {
             payload = doProcessor(channelHandlerContext, request.getParams());
         }catch (Exception e){
             payload.setErrorMsg(0, e.getCause().toString());
-            log.error("处理请求出错，出错原因：{}", e.getCause());
+            log.error("处理请求出错，出错原因：{}", e.getCause().toString());
         }
         return payload;
     }
@@ -32,5 +32,5 @@ public abstract class AbstractRequestProcessor implements RequestProcessor {
      * @param params
      * @return
      */
-    public abstract Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params);
+    public abstract Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) throws Exception;
 }

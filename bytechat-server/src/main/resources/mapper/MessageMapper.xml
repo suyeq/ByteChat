@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.bytechat.dao.MessageMapper">
+
+    <select id="fetchOffP2pMsgByUserId" resultType="io.bytechat.entity.MessageEntity">
+        select * from message where id in (select message_id from
+        off_message where recv_user_id = #{userId} and is_group = 0)
+        order by id asc
+    </select>
+</mapper>

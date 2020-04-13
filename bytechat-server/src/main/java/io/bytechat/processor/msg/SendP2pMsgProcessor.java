@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import io.bytechat.entity.MessageEntity;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
+import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
@@ -44,7 +45,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
     private MessageService messageService;
 
     public SendP2pMsgProcessor(){
-        idFactory = MemoryIdFactory.newInstance();
+        idFactory = SnowflakeIdFactory.getInstance();
         sessionManager = ImSessionManager.getInstance();
         messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
     }
@@ -63,7 +64,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         ChannelType channelType = ChannelType.getChannelType( toChannelType == null ? 0 : toChannelType);
         ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(toUserId, channelType);
         if (ObjectUtil.isNull(toSession)) {
-            log.info("{}不在线，存贮离线消息", toSession.userId());
+            log.info("{}不在线，存贮离线消息", toUserId);
             saveOfflineMsg(fromUserId, request, msgId);
         }else {
             Object transferMsg;
@@ -73,8 +74,8 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
                 transferMsg = null;
             }
             toSession.writeAndFlush(transferMsg);
-            saveHistoryMsg(fromUserId, request, msgId);
         }
+        saveHistoryMsg(fromUserId, request, msgId);
         return PayloadFactory.newSuccessPayload();
     }
 
@@ -100,8 +101,13 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
      * 存贮离线消息
      */
     private void saveOfflineMsg(Long userId, SendP2pMsgRequest request, Long msgId) {
-        MessageEntity message = messageBuild(userId, request, msgId);
-        messageService.saveOfflineMsg(message);
+        try{
+            MessageEntity message = messageBuild(userId, request, msgId);
+            messageService.saveOfflineMsg(message);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     /**

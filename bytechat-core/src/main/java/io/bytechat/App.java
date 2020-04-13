@@ -6,6 +6,8 @@ import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.lang.config.ThreadPoolConfig;
 import io.bytechat.lang.exception.ConfigException;
 import io.bytechat.lang.exception.ExceptionEnum;
+import io.bytechat.lang.id.IdFactory;
+import io.bytechat.lang.id.SnowflakeIdFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.SoundbankResource;
@@ -28,7 +30,9 @@ public class App
 //            e.printStackTrace();
 //        }
 //        System.out.println("lala");
-        System.out.println(0x1);
-        Initializer.init();
+//        System.out.println(0x1);
+//        Initializer.init();
+        IdFactory idFactory = SnowflakeIdFactory.getInstance();
+        System.out.println(idFactory.nextId());
     }
 }

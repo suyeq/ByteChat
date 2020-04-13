@@ -26,12 +26,12 @@ public class ReceiveMsgProcessor extends AbstractCommandProcessor {
             String groupName = request.getGroupName();
             long groupId = request.getGroupId();
             String msg = request.getContent();
-            System.out.println(String.format("GroupMsg-%s(%d):\t%s", groupName, groupId, msg));
+            System.out.println(String.format("groupMsg-%s(%d):\t%s", groupName, groupId, msg));
         }else {
             String msg = request.getContent();
             long userId = request.getUserId();
             String userName = request.getUserName();
-            System.out.println(String.format("P2pMsg-%s(%d):\t%s", userName, userId, msg));
+            System.out.println(String.format("p2pMsg-%s(%d):\t%s", userName, userId, msg));
         }
 
     }

@@ -16,7 +16,6 @@
     <bytecodeTargetLevel>
       <module name="bytechat-cache" target="1.8" />
       <module name="bytechat-db" target="1.8" />
-      <module name="demo" target="1.8" />
       <module name="test" target="1.8" />
     </bytecodeTargetLevel>
   </component>

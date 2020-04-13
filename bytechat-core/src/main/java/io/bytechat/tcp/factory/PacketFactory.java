@@ -3,6 +3,7 @@ package io.bytechat.tcp.factory;
 
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
+import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.tcp.entity.*;
 
 /**
@@ -11,7 +12,7 @@ import io.bytechat.tcp.entity.*;
  */
 public class PacketFactory {
 
-    private static IdFactory idFactory = MemoryIdFactory.newInstance();
+    private static IdFactory idFactory = SnowflakeIdFactory.getInstance();
 
     public static Packet newRequestPacket(Request request, long id){
         Packet packet = new DefaultPacket();

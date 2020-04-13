@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
+import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
@@ -31,7 +32,7 @@ public class UserFunc {
     public UserFunc(BaseFunc baseFunc){
         Assert.notNull(baseFunc, "BaseFunc不能为空");
         this.baseFunc = baseFunc;
-        this.idFactory = MemoryIdFactory.newInstance();
+        this.idFactory = SnowflakeIdFactory.getInstance();
     }
 
     public Payload fetchOnlineUsers(){

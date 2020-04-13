@@ -1,6 +1,16 @@
 package io.bytechat.processor.login;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
+import io.bytechat.entity.MessageEntity;
+import io.bytechat.processor.msg.SendP2pMsgRequest;
+import io.bytechat.service.MessageService;
+import io.bytechat.service.impl.DefaultMessageService;
+import io.bytechat.tcp.entity.Command;
+import io.bytechat.tcp.entity.Packet;
+import io.bytechat.tcp.factory.CommandFactory;
+import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.utils.BaseResult;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.server.channel.ChannelHelper;
@@ -21,6 +31,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -37,9 +49,12 @@ public class LoginProcessor extends AbstractRequestProcessor {
 
     private UserService userService;
 
+    private MessageService messageService;
+
     public LoginProcessor(){
         sessionManager = ImSessionManager.getInstance();
         userService = io.bytechat.utils.BeanUtil.getBean(DefaultUserService.class);
+        messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
     }
 
     @Override
@@ -57,6 +72,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
                 return PayloadFactory.newErrorPayload(400, "该账号已经登录");
             }
             boundSession(channel, user);
+            fetchOffMsg(user, channelType);
         }
         return userResult.isSuccess() ? PayloadFactory.newSuccessPayload()
                 : PayloadFactory.newErrorPayload(userResult.getCode(), userResult.getMsg());
@@ -71,5 +87,37 @@ public class LoginProcessor extends AbstractRequestProcessor {
         SessionHelper.makeOnline(channel, imSession.sessionId());
         //广播上线消息
         //.....
+    }
+
+    /**
+     * 拉取离线消息
+     * @param userEntity
+     * @param channelType
+     */
+    private void fetchOffMsg(UserEntity userEntity, ChannelType channelType){
+        List<MessageEntity> offMessages = messageService.fetchOffP2pMsgByUserId(userEntity.getId());
+        ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(userEntity.getId(), channelType);
+        for (MessageEntity msg : offMessages){
+            Packet packet = buildTransferPacketP2pMsg(msg);
+            toSession.writeAndFlush(packet);
+        }
+        if (CollectionUtil.isNotEmpty(offMessages)){
+            messageService.deleteOffP2pMsgByUserId(userEntity.getId());
+        }
+    }
+
+    /**
+     * 构建传输packet 消息
+     * @return
+     */
+    private Packet buildTransferPacketP2pMsg(MessageEntity messageEntity){
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", messageEntity.getSendUserId());
+        params.put("userName", "offLineMsg");
+        params.put("msgType", messageEntity.getMsgType());
+        params.put("content", messageEntity.getContent());
+        params.put("isGroup", messageEntity.getIsGroup());
+        Command command = CommandFactory.newCommand(ImService.RECV_MSG, params);
+        return PacketFactory.newCommandPacket(command);
     }
 }

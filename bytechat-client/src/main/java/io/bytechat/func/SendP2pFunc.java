@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
+import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
@@ -30,7 +31,7 @@ public class SendP2pFunc {
     public SendP2pFunc(BaseFunc baseFunc){
         Assert.notNull(baseFunc, "baseFunc不能为空");
         this.baseFunc = baseFunc;
-        this.idFactory = MemoryIdFactory.newInstance();
+        this.idFactory = SnowflakeIdFactory.getInstance();
     }
 
     public Payload sendP2pMsg(Long toUserId, Integer channelType, String msg, Byte msgType){

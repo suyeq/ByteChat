@@ -3,6 +3,7 @@ package io.bytechat.func;
 import cn.hutool.core.lang.Assert;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.MemoryIdFactory;
+import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
@@ -28,7 +29,7 @@ public class RegisterFunc {
     public RegisterFunc(BaseFunc baseFunc){
         Assert.notNull(baseFunc, "BaseFunc不能为空");
         this.baseFunc = baseFunc;
-        this.idFactory = MemoryIdFactory.newInstance();
+        this.idFactory = SnowflakeIdFactory.getInstance();
     }
 
     public Payload register(String userName, String password){

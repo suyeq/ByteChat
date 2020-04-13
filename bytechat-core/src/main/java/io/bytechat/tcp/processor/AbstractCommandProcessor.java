@@ -18,7 +18,8 @@ public abstract class AbstractCommandProcessor implements CommandProcessor{
         try {
             doProcessor(ctx,command.getContent());
         }catch (Exception e){
-            log.info("执行命令处理器错误,原因={}", e.getCause());
+            e.printStackTrace();
+            log.info("执行命令处理器错误,原因={}", e.getCause().toString());
         }
     }
 
@@ -27,5 +28,5 @@ public abstract class AbstractCommandProcessor implements CommandProcessor{
      * @param ctx
      * @param params
      */
-    public abstract void doProcessor(ChannelHandlerContext ctx, Map<String, Object> params);
+    public abstract void doProcessor(ChannelHandlerContext ctx, Map<String, Object> params) throws Exception;
 }
