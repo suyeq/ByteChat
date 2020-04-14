@@ -35,4 +35,16 @@ public class SessionHelper {
     public static String getSessionId(Channel channel){
         return channel.hasAttr(SESSION_ID) ? channel.attr(SESSION_ID).get() : null;
     }
+
+    /**
+     * get current channel userId
+     * @param channel
+     * @param sessionManager
+     * @return
+     */
+    public static Long getUserId(Channel channel, SessionManager sessionManager){
+        String sessionId = getSessionId(channel);
+        Session session = sessionManager.getSession(sessionId);
+        return session.userId();
+    }
 }

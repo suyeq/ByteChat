@@ -6,4 +6,8 @@
         select * from user as u where u.id in
         (select gu.user_id from group_user as gu where gu.group_id =#{groupId})
     </select>
+
+    <select id="fetchGroupsByUserId" resultType="io.bytechat.entity.GroupEntity">
+        select * from groups where id in (select group_id from group_user where user_id = #{userId})
+    </select>
 </mapper>

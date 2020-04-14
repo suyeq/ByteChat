@@ -13,7 +13,7 @@ import lombok.Data;
 public class GroupEntity {
 
     @TableId("id")
-    private Long groupId;
+    private Long id;
 
     private String groupName;
 

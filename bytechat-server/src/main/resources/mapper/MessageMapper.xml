@@ -7,4 +7,9 @@
         off_message where recv_user_id = #{userId} and is_group = 0)
         order by id asc
     </select>
+
+    <select id="fetchOffGroupMsgByUserIdAndGroupId" resultType="io.bytechat.entity.MessageEntity">
+        select * from message where id > (select last_ack_msg_id from group_user
+        where user_id =#{userId} and group_id=#{groupId}) order by id asc
+    </select>
 </mapper>

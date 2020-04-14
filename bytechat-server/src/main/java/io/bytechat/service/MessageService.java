@@ -1,8 +1,10 @@
 package io.bytechat.service;
 
 import io.bytechat.entity.MessageEntity;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : denglinhai
@@ -41,4 +43,11 @@ public interface MessageService {
      * @param userId
      */
     void deleteOffP2pMsgByUserId(Long userId);
+
+    /**
+     * get group offMsg
+     * @param userId
+     * @return
+     */
+    Map<Long, List<MessageEntity>> fetchOffGroupMsgByUserId(Long userId);
 }

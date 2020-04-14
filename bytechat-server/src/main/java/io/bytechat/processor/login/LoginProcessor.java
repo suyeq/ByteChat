@@ -2,10 +2,10 @@ package io.bytechat.processor.login;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import io.bytechat.entity.MessageEntity;
-import io.bytechat.processor.msg.SendP2pMsgRequest;
+import io.bytechat.service.GroupService;
 import io.bytechat.service.MessageService;
+import io.bytechat.service.impl.DefaultGroupService;
 import io.bytechat.service.impl.DefaultMessageService;
 import io.bytechat.tcp.entity.Command;
 import io.bytechat.tcp.entity.Packet;
@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -51,10 +52,13 @@ public class LoginProcessor extends AbstractRequestProcessor {
 
     private MessageService messageService;
 
+    private GroupService groupService;
+
     public LoginProcessor(){
         sessionManager = ImSessionManager.getInstance();
         userService = io.bytechat.utils.BeanUtil.getBean(DefaultUserService.class);
         messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
+        groupService = io.bytechat.utils.BeanUtil.getBean(DefaultGroupService.class);
     }
 
     @Override
@@ -72,7 +76,8 @@ public class LoginProcessor extends AbstractRequestProcessor {
                 return PayloadFactory.newErrorPayload(400, "该账号已经登录");
             }
             boundSession(channel, user);
-            fetchOffMsg(user, channelType);
+            fetchP2pOffMsg(user, channelType);
+            fetchGroupOffMsg(user, channelType);
         }
         return userResult.isSuccess() ? PayloadFactory.newSuccessPayload()
                 : PayloadFactory.newErrorPayload(userResult.getCode(), userResult.getMsg());
@@ -90,11 +95,11 @@ public class LoginProcessor extends AbstractRequestProcessor {
     }
 
     /**
-     * 拉取离线消息
+     * 拉取p2p离线消息
      * @param userEntity
      * @param channelType
      */
-    private void fetchOffMsg(UserEntity userEntity, ChannelType channelType){
+    private void fetchP2pOffMsg(UserEntity userEntity, ChannelType channelType){
         List<MessageEntity> offMessages = messageService.fetchOffP2pMsgByUserId(userEntity.getId());
         ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(userEntity.getId(), channelType);
         for (MessageEntity msg : offMessages){
@@ -106,6 +111,23 @@ public class LoginProcessor extends AbstractRequestProcessor {
         }
     }
 
+    private void fetchGroupOffMsg(UserEntity userEntity, ChannelType channelType){
+        Map<Long, List<MessageEntity>> groupMsgMap = messageService.fetchOffGroupMsgByUserId(userEntity.getId());
+        ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(userEntity.getId(), channelType);
+        Set<Long> set = groupMsgMap.keySet();
+        for (Long id : set){
+            List<MessageEntity> messageEntities = groupMsgMap.get(id);
+            for(int i=0; i < messageEntities.size(); i++){
+                MessageEntity msg = messageEntities.get(i);
+                Packet packet = buildTransferPacketGroupMsg(messageEntities.get(i));
+                toSession.writeAndFlush(packet);
+                if (i == messageEntities.size() - 1){
+                    groupService.updateGroupMsgAckId(userEntity.getId(), msg.getMessageId(), id);
+                }
+            }
+        }
+    }
+
     /**
      * 构建传输packet 消息
      * @return
@@ -114,6 +136,21 @@ public class LoginProcessor extends AbstractRequestProcessor {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", messageEntity.getSendUserId());
         params.put("userName", "offLineMsg");
+        params.put("msgType", messageEntity.getMsgType());
+        params.put("content", messageEntity.getContent());
+        params.put("isGroup", messageEntity.getIsGroup());
+        Command command = CommandFactory.newCommand(ImService.RECV_MSG, params);
+        return PacketFactory.newCommandPacket(command);
+    }
+
+    /**
+     * 构建传输packet 消息
+     * @return
+     */
+    private Packet buildTransferPacketGroupMsg(MessageEntity messageEntity){
+        Map<String, Object> params = new HashMap<>();
+        params.put("groupId", messageEntity.getGroupId());
+        params.put("groupName", "offLineMsg");
         params.put("msgType", messageEntity.getMsgType());
         params.put("content", messageEntity.getContent());
         params.put("isGroup", messageEntity.getIsGroup());

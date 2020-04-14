@@ -9,6 +9,7 @@ import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.session.Session;
+import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.GroupService;
 import io.bytechat.service.ImService;
@@ -65,21 +66,22 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
         GroupEntity groupEntity = groupService.fetchGroupByGroupId(request.getGroupId());
         List<UserEntity> userEntities = groupService.fetchUsersByGroupId(request.getGroupId());
         Long msgId = idFactory.nextId();
-        saveOfflineMsg(request, msgId);
+        Long sendUserId = SessionHelper.getUserId(channelHandlerContext.channel(), sessionManager);
+        saveOfflineMsg(request, msgId, sendUserId);
         Packet transferPacket = buildTransferPacketMsg(request, groupEntity);
         for (UserEntity userEntity : userEntities){
             Integer channelType = request.getChannelType();
             ChannelType type = ChannelType.getChannelType(channelType);
             Long userId = userEntity.getId();
             if (sessionManager.exists(type, userId)){
-                System.out.println(1);
                 Session toSession = sessionManager.fetchSessionByUserIdAndChannelType(userId, type);
                 toSession.writeAndFlush(transferPacket);
-                groupService.updateGroupMsgAckId(userId, msgId);
+                groupService.updateGroupMsgAckId(userId, msgId, request.getGroupId());
             }else {
                 //do nothing....
             }
         }
+        saveHistoryMsg(request, msgId, sendUserId);
         return PayloadFactory.newSuccessPayload();
     }
 
@@ -102,22 +104,22 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
     /**
      * 存贮离线消息
      */
-    private void saveOfflineMsg(GroupMsgRequest request, Long msgId) {
-        MessageEntity message = messageBuild(request, msgId);
+    private void saveOfflineMsg(GroupMsgRequest request, Long msgId, Long sendUserId) {
+        MessageEntity message = messageBuild(request, msgId, sendUserId);
         messageService.saveOfflineMsg(message);
     }
 
     /**
      * 保存历史消息
      */
-    private void saveHistoryMsg(GroupMsgRequest request, Long msgId){
-        MessageEntity message = messageBuild(request, msgId);
+    private void saveHistoryMsg(GroupMsgRequest request, Long msgId, Long sendUserId){
+        MessageEntity message = messageBuild(request, msgId, sendUserId);
         messageService.saveHistoryMsg(message);
     }
 
-    private MessageEntity messageBuild(GroupMsgRequest request, Long msgId){
+    private MessageEntity messageBuild(GroupMsgRequest request, Long msgId, Long sendUserId){
         MessageEntity message = MessageEntity.builder().messageId(msgId).groupId(request.getGroupId()).content(request.getContent())
-                                .msgType(request.getMsgType()).sendTime(request.getSendTime()).isGroup(1).build();
+                                .msgType(request.getMsgType()).sendTime(request.getSendTime()).isGroup(1).sendUserId(sendUserId).build();
         return message;
     }
 }

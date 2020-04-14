@@ -1,6 +1,7 @@
 package io.bytechat.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @date : 14:07 2020/4/7
  */
 @Data
+@Builder
 @TableName("group_user")
 public class GroupUserEntity {
 

@@ -27,8 +27,11 @@ public interface GroupService {
 
     /**
      * 更新接收群消息的ack_msg_id
+     * @param userId
+     * @param msgId
+     * @param groupId
      */
-    void updateGroupMsgAckId(Long userId, Long msgId);
+    void updateGroupMsgAckId(Long userId, Long msgId, Long groupId);
 
     /**
      * 获取一个群组信息
@@ -36,4 +39,11 @@ public interface GroupService {
      * @return
      */
     GroupEntity fetchGroupByGroupId(Long groupId);
+
+    /**
+     * 获取用户群组
+     * @param userId
+     * @return
+     */
+    List<GroupEntity> fetchGroupsByUserId(Long userId);
 }

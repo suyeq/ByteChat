@@ -18,4 +18,11 @@ public interface GroupMapper extends BaseMapper<GroupEntity> {
      * @return
      */
     List<UserEntity> fetchUsersByGroupId(Long groupId);
+
+    /**
+     * 获取用户群组
+     * @param userId
+     * @return
+     */
+    List<GroupEntity> fetchGroupsByUserId(Long userId);
 }
