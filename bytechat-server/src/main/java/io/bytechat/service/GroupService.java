@@ -2,6 +2,7 @@ package io.bytechat.service;
 
 import io.bytechat.entity.GroupEntity;
 import io.bytechat.entity.UserEntity;
+import io.bytechat.utils.BaseResult;
 
 import java.util.List;
 
@@ -46,4 +47,27 @@ public interface GroupService {
      * @return
      */
     List<GroupEntity> fetchGroupsByUserId(Long userId);
+
+    /**
+     * 创建一个群组
+     * @param masterUserId
+     * @param groupName
+     */
+    BaseResult createGroup(Long masterUserId, String groupName);
+
+    /**
+     * 加入一个群组
+     * @param userId
+     * @param groupId
+     * @return
+     */
+    BaseResult joinGroup(Long userId, Long groupId);
+
+    /**
+     * 判断群是否有该成员
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    boolean groupIsHaveUser(Long groupId, Long userId);
 }

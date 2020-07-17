@@ -46,6 +46,27 @@ public class UserFunc {
         return payload;
     }
 
+    /**
+     * 用户下线命令
+     * @param usrId
+     * @return
+     */
+    public Payload makeOfflineUser(Long usrId){
+        Map<String, Object> params = buildParams(usrId);
+        Request request = RequestFactory.newRequest(ImService.USER_OFFLINE, null, params);
+        Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
+        Payload payload = baseFunc.sendRequest(packet);
+        baseFunc.closeConnection();
+        return payload;
+    }
+
+    public Payload addFriend(Long userId){
+        Map<String, Object> params = buildParams(userId);
+        Request request = RequestFactory.newRequest(ImService.FRIEND_ADD, null, params);
+        Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
+        return baseFunc.sendRequest(packet);
+    }
+
     private Map<String, Object> buildParams(Long userId){
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);

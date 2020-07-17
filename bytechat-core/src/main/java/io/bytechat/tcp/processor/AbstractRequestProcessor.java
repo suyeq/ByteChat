@@ -1,5 +1,6 @@
 package io.bytechat.tcp.processor;
 
+import io.bytechat.lang.back.Back;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.entity.Request;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,14 +16,18 @@ import java.util.Map;
 public abstract class AbstractRequestProcessor implements RequestProcessor {
 
     @Override
-    public Payload process(ChannelHandlerContext channelHandlerContext, Request request) {
+    public Payload process(ChannelHandlerContext channelHandlerContext, Request request
+//            , Back back
+    ) {
         Payload payload = new Payload();
         try{
             payload = doProcessor(channelHandlerContext, request.getParams());
         }catch (Exception e){
+            //back.failure(e.getCause().toString());
             payload.setErrorMsg(0, e.getCause().toString());
             log.error("处理请求出错，出错原因：{}", e.getCause().toString());
         }
+        //back.success(payload);
         return payload;
     }
 

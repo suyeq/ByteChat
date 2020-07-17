@@ -11,6 +11,7 @@ import io.bytechat.lang.id.SnowflakeIdFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.SoundbankResource;
+import java.net.InetSocketAddress;
 
 /**
  * Hello world!
@@ -32,7 +33,13 @@ public class App
 //        System.out.println("lala");
 //        System.out.println(0x1);
 //        Initializer.init();
-        IdFactory idFactory = SnowflakeIdFactory.getInstance();
-        System.out.println(idFactory.nextId());
+//        IdFactory idFactory = SnowflakeIdFactory.getInstance();
+//        System.out.println(idFactory.nextId());
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(9999);
+        System.out.println(inetSocketAddress.getAddress().getHostName());
+        System.out.println(inetSocketAddress.getAddress().getHostAddress());
+        System.out.println(inetSocketAddress.getHostName());
+        System.out.println(inetSocketAddress.getPort());
+        System.out.println(inetSocketAddress.getHostString());
     }
 }

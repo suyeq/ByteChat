@@ -17,4 +17,12 @@ public interface ImService {
     String RECV_MSG = "recvMsg";
 
     String GET_ONLINE_USER = "getOnlineUser";
+
+    String USER_OFFLINE = "userOffline";
+
+    String FRIEND_ADD = "addFriend";
+
+    String GROUP_ADD = "addGroup";
+
+    String GROUP_JOIN = "joinGroup";
 }

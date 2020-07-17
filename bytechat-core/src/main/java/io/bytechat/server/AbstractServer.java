@@ -38,14 +38,15 @@ public abstract class AbstractServer implements Server{
      */
     private AtomicBoolean start = new AtomicBoolean(false);
 
-    public AbstractServer(Integer serverPort){
-        this(serverPort, null);
+    public AbstractServer(Integer serverPort, ServerMode serverMode){
+        this(serverPort, null, serverMode);
     }
 
-    public AbstractServer(Integer serverPort, ChannelListener channelListener){
+    public AbstractServer(Integer serverPort, ChannelListener channelListener, ServerMode serverMode){
         int port = ObjectUtil.isNull(serverPort) ? ConfigFactory.getConfig(BaseConfig.class).serverPort() : serverPort;
         this.serverAttr = ServerAttr.getLocalServer(port);
         this.channelListener = channelListener == null ? DefaultChannelListener.newInstance() : channelListener;
+        this.serverAttr.setServerMode(serverMode == null ? ServerMode.STAND_ALONE : serverMode);
     }
 
     @Override
@@ -88,6 +89,8 @@ public abstract class AbstractServer implements Server{
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                 long spend = System.currentTimeMillis() - start;
                 if (channelFuture.isSuccess()){
+                    registerRouter(serverAttr);
+                    channelListener.bindServerAttr(serverAttr);
                     log.info("{}服务启动成功，端口号[{}]，花费{}ms", this.getClass().getSimpleName(), serverAttr.getPort(), spend);
                 }
             }

@@ -47,8 +47,10 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
                 onRequest(ctx, packet);
             }else if (packet.getType() == Packet.PACKET_RESPONSE){
                 onResponse(ctx, packet);
-            }else {
+            }else if (packet.getType() == Packet.PACKET_COMMAND){
                 onCommand(ctx, packet);
+            }else if (packet.getType() == Packet.PACKET_NOTICE){
+                onNotice(ctx, packet);
             }
         }
     }
@@ -57,6 +59,14 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.info("[{}]通道关闭,原因{}", ctx.channel(), cause);
         ctx.close();
+    }
+
+    private void onNotice(ChannelHandlerContext ctx, Packet packet) {
+        if (packet.getNotice().isAck()){
+
+        }else {
+
+        }
     }
 
     private void onCommand(ChannelHandlerContext ctx, Packet packet) {

@@ -67,6 +67,10 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
         List<UserEntity> userEntities = groupService.fetchUsersByGroupId(request.getGroupId());
         Long msgId = idFactory.nextId();
         Long sendUserId = SessionHelper.getUserId(channelHandlerContext.channel(), sessionManager);
+        boolean isSend = groupService.groupIsHaveUser(request.getGroupId(), sendUserId);
+        if (!isSend){
+            return PayloadFactory.newErrorPayload(400, "不在该群内，无法发送消息");
+        }
         saveOfflineMsg(request, msgId, sendUserId);
         Packet transferPacket = buildTransferPacketMsg(request, groupEntity);
         for (UserEntity userEntity : userEntities){

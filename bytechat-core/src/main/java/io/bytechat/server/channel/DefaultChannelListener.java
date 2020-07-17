@@ -1,6 +1,8 @@
 package io.bytechat.server.channel;
 
 import cn.hutool.core.lang.Singleton;
+import io.bytechat.server.ServerAttr;
+import io.bytechat.server.ServerMode;
 import io.bytechat.server.session.DefaultSessionManager;
 import io.bytechat.server.session.SessionManager;
 import io.netty.channel.Channel;
@@ -19,6 +21,8 @@ public class DefaultChannelListener implements ChannelListener {
     private ChannelManager channelManager;
 
     private SessionManager sessionManager;
+
+    private ServerAttr serverAttr;
 
     private DefaultChannelListener(){
         this.channelManager = DefaultChannelManager.newInstance();
@@ -44,5 +48,11 @@ public class DefaultChannelListener implements ChannelListener {
         channelManager.removeChannel(channelId);
         sessionManager.removeSession(channelId);
         log.info("移除一个channelId={},", channelId);
+    }
+
+    @Override
+    public void bindServerAttr(ServerAttr serverAttr) {
+        this.serverAttr = serverAttr;
+        sessionManager.bindServerAttr(serverAttr);
     }
 }

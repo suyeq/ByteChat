@@ -79,8 +79,12 @@ public class LoginProcessor extends AbstractRequestProcessor {
             fetchP2pOffMsg(user, channelType);
             fetchGroupOffMsg(user, channelType);
         }
-        return userResult.isSuccess() ? PayloadFactory.newSuccessPayload()
+        Payload payload = userResult.isSuccess() ? PayloadFactory.newSuccessPayload()
                 : PayloadFactory.newErrorPayload(userResult.getCode(), userResult.getMsg());
+        if (userResult.isSuccess()){
+            payload.setResult((UserEntity) userResult.getContent());
+        }
+        return payload;
     }
 
     private void boundSession(Channel channel, UserEntity user) {
@@ -102,6 +106,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
     private void fetchP2pOffMsg(UserEntity userEntity, ChannelType channelType){
         List<MessageEntity> offMessages = messageService.fetchOffP2pMsgByUserId(userEntity.getId());
         ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(userEntity.getId(), channelType);
+        System.out.println(offMessages.toString());
         for (MessageEntity msg : offMessages){
             Packet packet = buildTransferPacketP2pMsg(msg);
             toSession.writeAndFlush(packet);
@@ -115,6 +120,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
         Map<Long, List<MessageEntity>> groupMsgMap = messageService.fetchOffGroupMsgByUserId(userEntity.getId());
         ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(userEntity.getId(), channelType);
         Set<Long> set = groupMsgMap.keySet();
+        System.out.println(set.toString());
         for (Long id : set){
             List<MessageEntity> messageEntities = groupMsgMap.get(id);
             for(int i=0; i < messageEntities.size(); i++){

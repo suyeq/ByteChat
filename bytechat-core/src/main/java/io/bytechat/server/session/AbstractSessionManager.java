@@ -4,10 +4,16 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import io.bytechat.server.ServerAttr;
+import io.bytechat.server.ServerMode;
+import io.bytechat.server.channel.ChannelHelper;
 import io.bytechat.server.channel.ChannelType;
+import io.bytechat.server.router.RouterService;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -21,10 +27,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class AbstractSessionManager implements SessionManager{
 
+    private static ServerAttr serverAttr;
+
+    private RouterService routerService;
+
     private static Map<String, Session> sessionMap;
 
     public AbstractSessionManager(){
         sessionMap = new ConcurrentHashMap<>(16);
+        routerService = RouterService.getInstance();
     }
 
     @Override
@@ -40,6 +51,10 @@ public abstract class AbstractSessionManager implements SessionManager{
         session.bind(channelId, userId);
         sessionMap.putIfAbsent(session.sessionId(), session);
         log.info("session={}绑定channelId={}成功", session, channelId);
+        if (serverAttr.getServerMode() == ServerMode.CLUSTER){
+            String ip = getCurrentServerIp(channelId);
+            routerService.bindRouter(session.sessionId(), ip);
+        }
     }
 
     @Override
@@ -52,6 +67,10 @@ public abstract class AbstractSessionManager implements SessionManager{
         while (iterator.hasNext()){
             Session session = iterator.next();
             if (session.channelId().equals(channelId)){
+                if (serverAttr.getServerMode() == ServerMode.CLUSTER){
+                    String ip = getCurrentServerIp(channelId);
+                    routerService.untieRouter(session.sessionId(), ip);
+                }
                 iterator.remove();
                 log.info("移除session={}", session);
                 break;
@@ -63,6 +82,22 @@ public abstract class AbstractSessionManager implements SessionManager{
     public Session getSession(String sessionId) {
         Assert.notNull(sessionId, "sessionId 不能为空");
         return sessionMap.get(sessionId);
+    }
+
+    @Override
+    public Session getSession(Long userId){
+        Assert.notNull(userId, "userId 不能为空");
+        if (CollectionUtil.isEmpty(sessionMap)){
+            return null;
+        }
+        Iterator<Session> iterator = sessionMap.values().iterator();
+        while (iterator.hasNext()){
+            Session session = iterator.next();
+            if (session.userId() == userId){
+                return session;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -91,6 +126,11 @@ public abstract class AbstractSessionManager implements SessionManager{
         return CollectionUtil.newArrayList(sessionMap.values());
     }
 
+    @Override
+    public void bindServerAttr(ServerAttr serverAttrs){
+        serverAttr = serverAttrs;
+    }
+
     /**
      * 生成sessionId
      * @return
@@ -104,6 +144,17 @@ public abstract class AbstractSessionManager implements SessionManager{
      * @return
      */
     public abstract Session newSession(String sessionId);
+
+    /**
+     * 获得当前channel的ip
+     * @param channelId
+     * @return
+     */
+    private String getCurrentServerIp(ChannelId channelId){
+        Channel channel = ChannelHelper.getChannelWrapper(channelId).getChannel();
+        InetSocketAddress insocket = (InetSocketAddress) channel.localAddress();
+        return insocket.getHostString() + ":" +insocket.getPort();
+    }
 
 
 }

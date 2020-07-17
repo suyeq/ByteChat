@@ -11,6 +11,7 @@ import lombok.Data;
  * 服务器的参数
  */
 @Data
+@Builder
 @AllArgsConstructor
 public class ServerAttr {
 
@@ -18,7 +19,13 @@ public class ServerAttr {
 
     private String address;
 
+    private ServerMode serverMode;
+
     public static ServerAttr getLocalServer(int serverPort){
-        return new ServerAttr(serverPort, MultipleUtil.getLocalIPV4());
+        return new ServerAttr(serverPort, MultipleUtil.getLocalIPV4(), ServerMode.STAND_ALONE);
+    }
+
+    public String routerKey(){
+        return address + ":" + port;
     }
 }

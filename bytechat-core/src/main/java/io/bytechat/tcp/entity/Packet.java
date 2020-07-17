@@ -18,6 +18,8 @@ public abstract class Packet {
 
     public static byte PACKET_COMMAND = (byte) 1 << 3;
 
+    public static byte PACKET_NOTICE = (byte) 1 << 4;
+
     private byte magic = Packet.PACKET_MAGIC;
 
     private long id;
@@ -26,6 +28,7 @@ public abstract class Packet {
      * 1 ----> request
      * 2 ----> response
      * 3 ----> command
+     * 4 ----> notice
      */
     private byte type;
 
@@ -34,6 +37,8 @@ public abstract class Packet {
     private Payload payload;
 
     private Command command;
+
+    private Notice notice;
 
     private byte algorithm = algorithm();
 

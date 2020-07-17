@@ -8,6 +8,7 @@ import io.bytechat.entity.GroupEntity;
 import io.bytechat.entity.GroupUserEntity;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.service.GroupService;
+import io.bytechat.utils.BaseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,5 +56,37 @@ public class DefaultGroupService implements GroupService {
     @Override
     public List<GroupEntity> fetchGroupsByUserId(Long userId) {
         return groupMapper.fetchGroupsByUserId(userId);
+    }
+
+    @Override
+    public BaseResult createGroup(Long masterUserId, String groupName) {
+        GroupEntity groupEntity = GroupEntity.builder().groupMasterId(masterUserId)
+                                             .groupName(groupName).groupUsers(0)
+                                             .createTime(System.currentTimeMillis()).build();
+        int rows = groupMapper.insert(groupEntity);
+        if (rows > 0){
+            return BaseResult.newSuccessResult("create group success", groupEntity.getId());
+        }
+        return BaseResult.newErrorResult(400, "create group fail cause: db execute error");
+    }
+
+    @Override
+    public BaseResult joinGroup(Long userId, Long groupId) {
+        GroupUserEntity groupUserEntity = GroupUserEntity.builder().userId(userId)
+                                          .groupId(groupId).lastAckMsgId(0L).build();
+        int rows = groupUserMapper.insert(groupUserEntity);
+        if (rows > 0){
+            return BaseResult.newSuccessResult("join group success");
+        }
+        return BaseResult.newErrorResult(400, "join group fail cause: db execute error");
+    }
+
+    @Override
+    public boolean groupIsHaveUser(Long groupId, Long userId) {
+        QueryWrapper<GroupUserEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(GroupUserEntity::getGroupId, groupId)
+                             .eq(GroupUserEntity::getUserId, userId);
+        GroupUserEntity groupUserEntity = groupUserMapper.selectOne(queryWrapper);
+        return groupUserEntity == null ? false : true;
     }
 }

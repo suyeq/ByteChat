@@ -16,7 +16,8 @@ public class ClientApplication3
         Client client= SimpleClientFactory.newInstance()
                 .newClient(ServerAttr.getLocalServer(8899));
         client.connect();
-        ClientBootstrap cli = new ClientBootstrap(client);
+        Thread.sleep(2000);
+        ClientCommand cli = new ClientCommand(client);
         cli.doCli();
     }
 }

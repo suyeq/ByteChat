@@ -2,10 +2,7 @@ package io.bytechat;
 
 import io.bytechat.client.Client;
 import io.bytechat.client.SimpleClientFactory;
-import io.bytechat.func.BaseFunc;
-import io.bytechat.func.LoginFunc;
 import io.bytechat.server.ServerAttr;
-import io.bytechat.tcp.entity.Payload;
 
 
 /**
@@ -19,8 +16,8 @@ public class ClientApplication
         Client client= SimpleClientFactory.newInstance()
                 .newClient(ServerAttr.getLocalServer(8899));
         client.connect();
-
-        ClientBootstrap cli = new ClientBootstrap(client);
+        Thread.sleep(2000);
+        ClientCommand cli = new ClientCommand(client);
         cli.doCli();
     }
 }

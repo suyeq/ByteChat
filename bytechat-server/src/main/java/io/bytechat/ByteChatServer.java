@@ -1,5 +1,7 @@
 package io.bytechat;
 
+import io.bytechat.redis.JedisService;
+import io.bytechat.server.ClusterServer;
 import io.bytechat.server.StandaloneServer;
 import io.bytechat.server.channel.DefaultChannelListener;
 import org.mybatis.spring.annotation.MapperScan;
@@ -20,6 +22,8 @@ public class ByteChatServer {
     public static void main( String[] args )
     {
         SpringApplication.run(ByteChatServer.class, args);
+        JedisService.getInstance();
         new StandaloneServer(8899, DefaultChannelListener.newInstance()).start();
+        //new ClusterServer(8899, DefaultChannelListener.newInstance()).start();
     }
 }

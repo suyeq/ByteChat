@@ -28,6 +28,16 @@ public class SessionHelper {
     }
 
     /**
+     * 用户下线
+     * @param channel
+     * @param sessionId
+     */
+    public static void makeOffline(Channel channel, String sessionId){
+        channel.attr(SESSION_ID).set(null);
+        log.info("[sessionId]={}下线了", sessionId);
+    }
+
+    /**
      * 根据channel返回sessionId
      * @param channel
      * @return

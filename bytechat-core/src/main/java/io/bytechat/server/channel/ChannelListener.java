@@ -1,5 +1,6 @@
 package io.bytechat.server.channel;
 
+import io.bytechat.server.ServerAttr;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
@@ -23,4 +24,10 @@ public interface ChannelListener {
      * @param channelId
      */
     void channelInactive(ChannelId channelId);
+
+    /**
+     * 绑定serverAttr
+     * @param serverAttr
+     */
+    void bindServerAttr(ServerAttr serverAttr);
 }

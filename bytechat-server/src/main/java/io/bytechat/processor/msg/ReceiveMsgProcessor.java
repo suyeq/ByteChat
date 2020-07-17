@@ -33,6 +33,6 @@ public class ReceiveMsgProcessor extends AbstractCommandProcessor {
             String userName = request.getUserName();
             System.out.println(String.format("p2pMsg-%s(%d):\t%s", userName, userId, msg));
         }
-
+        System.out.println("byteChat>");
     }
 }

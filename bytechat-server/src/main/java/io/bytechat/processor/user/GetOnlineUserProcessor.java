@@ -45,7 +45,7 @@ public class GetOnlineUserProcessor extends AbstractRequestProcessor {
         Long currentUserId = session.userId();
         List<Session> sessions = sessionManager.fetchAllSession();
         List<UserEntity> userEntities = sessions.stream()
-                .filter(e -> e.userId() != currentUserId)
+//                .filter(e -> e.userId() != currentUserId)
                 .map(e -> {
                     ImSession imSession = (ImSession) e;
                     return UserEntity.builder().id(imSession.userId())

@@ -38,5 +38,9 @@ public class BaseFunc {
         return payload;
     }
 
+    public void closeConnection(){
+        client.disconnect();
+    }
+
 
 }

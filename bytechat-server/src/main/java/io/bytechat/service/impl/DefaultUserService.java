@@ -3,7 +3,9 @@ package io.bytechat.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.bytechat.entity.FriendEntity;
 import io.bytechat.entity.UserEntity;
+import io.bytechat.processor.login.LoginRequest;
 import io.bytechat.server.session.Session;
 import io.bytechat.utils.BaseResult;
 import io.bytechat.dao.UserMapper;
@@ -52,9 +54,37 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    public BaseResult addFriend(Long oneUserId, Long twoUserId) {
+        if (ObjectUtil.isNull(oneUserId) || ObjectUtil.isNull(twoUserId)){
+            return BaseResult.newErrorResult(400, "传入用户id不能为空");
+        }
+        FriendEntity friendEntity = buildFriendEntity(oneUserId, twoUserId);
+        userMapper.addFriend(friendEntity);
+        return BaseResult.newSuccessResult("添加好友成功");
+    }
+
+    @Override
+    public boolean isFriend(Long userOneId, Long userTwoId) {
+        if (ObjectUtil.isNull(userOneId) || ObjectUtil.isNull(userTwoId)){
+            return false;
+        }
+        FriendEntity friendEntity = userMapper.fetchFriendByUserId(userOneId, userTwoId);
+        return friendEntity == null ? false : true;
+    }
+
+    @Override
     public boolean isOnline(Long userId) {
         return false;
     }
 
+    @Override
+    public void update(LoginRequest loginRequest) {
+
+    }
+
+    private FriendEntity buildFriendEntity(Long oneUserId, Long twoUserId){
+        return FriendEntity.builder().userOneId(oneUserId).userTwoId(twoUserId)
+               .createTime(System.currentTimeMillis()).oneRemark("").twoRemark("").build();
+    }
 
 }

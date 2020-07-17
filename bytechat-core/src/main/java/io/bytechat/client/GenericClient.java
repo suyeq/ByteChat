@@ -3,6 +3,8 @@ package io.bytechat.client;
 import cn.hutool.core.lang.Assert;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
+import io.bytechat.server.balancer.LoadBalancer;
+import io.bytechat.server.balancer.PollLoadBalancer;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PacketFactory;
@@ -33,7 +35,17 @@ public class GenericClient implements Client {
 
     private ServerAttr serverAttr;
 
+    private EventLoopGroup eventLoopGroup;
+
     private volatile boolean connect;
+
+    private LoadBalancer loadBalancer;
+
+    public GenericClient(){
+        this.connect = false;
+        Initializer.init();
+        loadBalancer = PollLoadBalancer.getInstance();
+    }
 
     public GenericClient(ServerAttr serverAttr){
         Assert.notNull(serverAttr, "serverAttr不能为空");
@@ -44,8 +56,12 @@ public class GenericClient implements Client {
 
     @Override
     public void connect() {
+        // 默认serverAttr不传就走集群路线
+        if (serverAttr == null){
+            serverAttr = loadBalancer.nextServer();
+        }
         Assert.notNull(serverAttr, "serverAttr不能为空");
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+        eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
@@ -74,6 +90,15 @@ public class GenericClient implements Client {
     }
 
     @Override
+    public void disconnect() {
+        if (!connect){
+            log.info("client not connect server");
+            return;
+        }
+        eventLoopGroup.shutdownGracefully();
+    }
+
+    @Override
     public CompletableFuture<Packet> sendRequest(Packet request) {
         CompletableFuture<Packet> promise = new CompletableFuture<Packet>();
         if (!connect){
@@ -85,6 +110,8 @@ public class GenericClient implements Client {
         }
         PendingPackets.add(request.getId(), promise);
         ChannelFuture channelFuture = channel.writeAndFlush(request);
+        //TODO how make this msg in queue...
+        //...
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {

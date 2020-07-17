@@ -14,6 +14,13 @@ public class PayloadFactory {
         return payload;
     }
 
+    public static Payload newSuccessPayload(Object object){
+        Payload payload = new Payload();
+        payload.setSuccessMsg(200, "success");
+        payload.setResult(object);
+        return payload;
+    }
+
     public static  Payload newErrorPayload(int code, String msg){
         Payload payload = new Payload();
         payload.setErrorMsg(code, msg);

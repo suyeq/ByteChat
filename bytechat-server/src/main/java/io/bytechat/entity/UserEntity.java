@@ -32,4 +32,9 @@ public class UserEntity {
 
     private Integer isDelete;
 
+    private Integer status;
+
+    private String head;
+
+    private String signature;
 }

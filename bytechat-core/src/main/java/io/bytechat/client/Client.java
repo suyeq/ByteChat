@@ -17,6 +17,11 @@ public interface Client {
     void connect();
 
     /**
+     * 断开连接
+     */
+    void disconnect();
+
+    /**
      * 发送请求
      * @param request
      * @return

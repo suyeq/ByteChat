@@ -2,6 +2,7 @@ package io.bytechat.server.session;
 
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.IdUtil;
+import io.bytechat.server.ServerMode;
 
 /**
  * @author : denglinhai
@@ -9,12 +10,13 @@ import cn.hutool.core.util.IdUtil;
  */
 public class DefaultSessionManager extends AbstractSessionManager {
 
+
     private DefaultSessionManager(){
 
     }
 
     public static DefaultSessionManager newInstance(){
-        return Singleton.get(DefaultSessionManager.class );
+        return Singleton.get(DefaultSessionManager.class);
     }
 
     @Override

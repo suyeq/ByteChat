@@ -5,7 +5,6 @@ import cn.hutool.core.lang.ClassScaner;
 import cn.hutool.core.lang.Singleton;
 import io.bytechat.init.InitAble;
 import io.bytechat.init.InitOrder;
-import io.bytechat.init.Initializer;
 import io.bytechat.lang.config.BaseConfig;
 import io.bytechat.lang.config.ConfigFactory;
 import lombok.Getter;

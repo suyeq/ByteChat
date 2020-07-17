@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.bytechat.dao.UserMapper">
+    <insert id="addFriend" parameterType="io.bytechat.entity.FriendEntity">
+        insert into friend value (#{friend.userOneId}, #{friend.userTwoId}, #{friend.createTime},
+        #{friend.oneRemark},#{friend.twoRemark});
+    </insert>
+
+    <select id="fetchFriendByUserId" resultType="io.bytechat.entity.FriendEntity">
+        select * from friend where (user_one_id=#{userOneId} and user_two_id=#{userTwoId}) or
+        (user_one_id=#{userTwoId} and user_two_id=#{userOneId})
+    </select>
+</mapper>
