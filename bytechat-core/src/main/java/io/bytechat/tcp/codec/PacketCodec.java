@@ -54,7 +54,7 @@ public class PacketCodec extends ByteToMessageCodec<Packet> {
         }
         /**
          * 标记读的索引
-         * 避免一个packet为读完的情况
+         * 避免一个packet未读完的情况
          */
         byteBuf.markReaderIndex();
         byte magic = byteBuf.readByte();

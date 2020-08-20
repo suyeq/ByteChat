@@ -4,16 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import io.bytechat.entity.MessageEntity;
 import io.bytechat.lang.id.IdFactory;
-import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
-import io.bytechat.service.MessageService;
-import io.bytechat.service.UserService;
-import io.bytechat.service.impl.DefaultMessageService;
-import io.bytechat.service.impl.DefaultUserService;
 import io.bytechat.session.ImSession;
 import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Command;
@@ -44,20 +39,18 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
 
     private SessionManager sessionManager;
 
-    private MessageService messageService;
-
-    private UserService userService;
-
     public SendP2pMsgProcessor(){
         idFactory = SnowflakeIdFactory.getInstance();
         sessionManager = ImSessionManager.getInstance();
-        messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
-        userService = io.bytechat.utils.BeanUtil.getBean(DefaultUserService.class);
     }
 
     @Override
     public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
         SendP2pMsgRequest request = BeanUtil.mapToBean(params, SendP2pMsgRequest.class, false);
+        //立即返回表明消息到达服务端
+        if (ObjectUtil.isNotNull(request)){
+            return PayloadFactory.newSuccessPayload();
+        }
         Channel fromChannel = channelHandlerContext.channel();
         String sessionId = SessionHelper.getSessionId(fromChannel);
         ImSession session =(ImSession) sessionManager.getSession(sessionId);
@@ -68,10 +61,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         Long msgId = idFactory.nextId();
         ChannelType channelType = ChannelType.getChannelType( toChannelType == null ? 0 : toChannelType);
         ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(toUserId, channelType);
-        if (!userService.isFriend(fromUserId, toUserId)){
-            log.info("发送者与接受者不是好友关系");
-            return PayloadFactory.newErrorPayload(400, "发送者与接受者不是好友关系");
-        }
+
         if (ObjectUtil.isNull(toSession)) {
             log.info("{}不在线，存贮离线消息", toUserId);
             saveOfflineMsg(fromUserId, request, msgId);
@@ -110,12 +100,6 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
      * 存贮离线消息
      */
     private void saveOfflineMsg(Long userId, SendP2pMsgRequest request, Long msgId) {
-        try{
-            MessageEntity message = messageBuild(userId, request, msgId);
-            messageService.saveOfflineMsg(message);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
     }
 
@@ -123,8 +107,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
      * 保存历史消息
      */
     private void saveHistoryMsg(Long userId, SendP2pMsgRequest request, Long msgId){
-        MessageEntity message = messageBuild(userId, request, msgId);
-        messageService.saveHistoryMsg(message);
+
     }
 
     private MessageEntity messageBuild(Long userId, SendP2pMsgRequest request, Long msgId){

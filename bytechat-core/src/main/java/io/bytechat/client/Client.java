@@ -19,7 +19,7 @@ public interface Client {
     /**
      * 断开连接
      */
-    void disconnect();
+    void closeConnect();
 
     /**
      * 发送请求

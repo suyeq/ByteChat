@@ -12,6 +12,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Payload {
 
+    /**
+     * only ack notice ,no content
+     */
+    public static byte PAYLOAD_ACK = (byte) 0 << 1;
+
+    public static byte PAYLOAD_MSG = (byte) 1 << 2;
+
+    private byte type;
+
     private boolean success;
 
     private int code;
@@ -30,6 +39,10 @@ public class Payload {
         this.success = false;
         this.code = code;
         this.msg = msg;
+    }
+
+    public boolean isOnlyAck(){
+        return type == PAYLOAD_ACK;
     }
 
 }

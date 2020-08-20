@@ -1,6 +1,7 @@
 package io.bytechat.client;
 
 import cn.hutool.core.lang.Assert;
+import io.bytechat.confirm.MsgConfirmExecutor;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
 import io.bytechat.server.balancer.LoadBalancer;
@@ -17,7 +18,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.concurrent.CompleteFuture;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +41,13 @@ public class GenericClient implements Client {
 
     private LoadBalancer loadBalancer;
 
+    private MsgConfirmExecutor confirmExecutor;
+
     public GenericClient(){
         this.connect = false;
         Initializer.init();
         loadBalancer = PollLoadBalancer.getInstance();
+        confirmExecutor = MsgConfirmExecutor.getInstance();
     }
 
     public GenericClient(ServerAttr serverAttr){
@@ -90,7 +93,7 @@ public class GenericClient implements Client {
     }
 
     @Override
-    public void disconnect() {
+    public void closeConnect() {
         if (!connect){
             log.info("client not connect server");
             return;
@@ -110,7 +113,8 @@ public class GenericClient implements Client {
         }
         PendingPackets.add(request.getId(), promise);
         ChannelFuture channelFuture = channel.writeAndFlush(request);
-        //TODO how make this msg in queue...
+        //TODO: how make this msg in queue...
+        confirmExecutor.startMonitor(request.getId());
         //...
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override

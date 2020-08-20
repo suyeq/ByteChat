@@ -3,10 +3,6 @@ package io.bytechat.processor.login;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import io.bytechat.entity.MessageEntity;
-import io.bytechat.service.GroupService;
-import io.bytechat.service.MessageService;
-import io.bytechat.service.impl.DefaultGroupService;
-import io.bytechat.service.impl.DefaultMessageService;
 import io.bytechat.tcp.entity.Command;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.factory.CommandFactory;
@@ -19,8 +15,6 @@ import io.bytechat.server.channel.ChannelWrapper;
 import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
-import io.bytechat.service.UserService;
-import io.bytechat.service.impl.DefaultUserService;
 import io.bytechat.session.ImSession;
 import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Payload;
@@ -48,17 +42,9 @@ public class LoginProcessor extends AbstractRequestProcessor {
 
     private SessionManager sessionManager;
 
-    private UserService userService;
-
-    private MessageService messageService;
-
-    private GroupService groupService;
 
     public LoginProcessor(){
         sessionManager = ImSessionManager.getInstance();
-        userService = io.bytechat.utils.BeanUtil.getBean(DefaultUserService.class);
-        messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
-        groupService = io.bytechat.utils.BeanUtil.getBean(DefaultGroupService.class);
     }
 
     @Override
@@ -66,7 +52,8 @@ public class LoginProcessor extends AbstractRequestProcessor {
         LoginRequest loginRequest = BeanUtil.mapToBean(params, LoginRequest.class, false);
         //判断是否已经登录
         Channel channel = channelHandlerContext.channel();
-        BaseResult userResult = userService.login(loginRequest.getUserName(), loginRequest.getPassword());
+        BaseResult userResult =null;
+                //= userService.login(loginRequest.getUserName(), loginRequest.getPassword());
         if (userResult.isSuccess()){
             UserEntity user = (UserEntity) userResult.getContent();
             ChannelWrapper channelWrapper = ChannelHelper.getChannelWrapper(channel.id());
@@ -104,34 +91,11 @@ public class LoginProcessor extends AbstractRequestProcessor {
      * @param channelType
      */
     private void fetchP2pOffMsg(UserEntity userEntity, ChannelType channelType){
-        List<MessageEntity> offMessages = messageService.fetchOffP2pMsgByUserId(userEntity.getId());
-        ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(userEntity.getId(), channelType);
-        System.out.println(offMessages.toString());
-        for (MessageEntity msg : offMessages){
-            Packet packet = buildTransferPacketP2pMsg(msg);
-            toSession.writeAndFlush(packet);
-        }
-        if (CollectionUtil.isNotEmpty(offMessages)){
-            messageService.deleteOffP2pMsgByUserId(userEntity.getId());
-        }
+
     }
 
     private void fetchGroupOffMsg(UserEntity userEntity, ChannelType channelType){
-        Map<Long, List<MessageEntity>> groupMsgMap = messageService.fetchOffGroupMsgByUserId(userEntity.getId());
-        ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(userEntity.getId(), channelType);
-        Set<Long> set = groupMsgMap.keySet();
-        System.out.println(set.toString());
-        for (Long id : set){
-            List<MessageEntity> messageEntities = groupMsgMap.get(id);
-            for(int i=0; i < messageEntities.size(); i++){
-                MessageEntity msg = messageEntities.get(i);
-                Packet packet = buildTransferPacketGroupMsg(messageEntities.get(i));
-                toSession.writeAndFlush(packet);
-                if (i == messageEntities.size() - 1){
-                    groupService.updateGroupMsgAckId(userEntity.getId(), msg.getMessageId(), id);
-                }
-            }
-        }
+
     }
 
     /**

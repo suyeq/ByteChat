@@ -13,13 +13,23 @@ import java.util.Map;
 public class Notice {
 
     /**
-     * mark is only notice,no content
+     * only ack notice ,no content
      */
-    private boolean isAck;
+    public static byte NOTICE_ACK = (byte) 0 << 1;
+
+    public static byte NOTICE_MSG = (byte) 1 << 2;
+
+    /**
+     * notice type
+     */
+    private byte type;
 
     /**
      *  content
      */
     private Map<String, Object> content;
 
+    public boolean isOnlyAck(){
+        return type == NOTICE_ACK;
+    }
 }

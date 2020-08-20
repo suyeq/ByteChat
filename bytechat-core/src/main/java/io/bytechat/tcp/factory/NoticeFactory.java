@@ -12,13 +12,13 @@ public class NoticeFactory {
 
     public static Notice newNotice(){
         Notice notice = new Notice();
-        notice.setAck(true);
+        notice.setType(Notice.NOTICE_ACK);
         return notice;
     }
 
     public static Notice newNotice(Map<String, Object> content){
         Notice notice = new Notice();
-        notice.setAck(false);
+        notice.setType(Notice.NOTICE_MSG);
         notice.setContent(content);
         return notice;
     }

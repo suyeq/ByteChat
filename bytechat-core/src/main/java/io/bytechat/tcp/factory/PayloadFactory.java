@@ -11,6 +11,14 @@ public class PayloadFactory {
     public static Payload newSuccessPayload(){
         Payload payload = new Payload();
         payload.setSuccessMsg(200, "success");
+        payload.setType(Payload.PAYLOAD_MSG);
+        return payload;
+    }
+
+    public static Payload newSuccessAckPayload(){
+        Payload payload = new Payload();
+        payload.setSuccessMsg(200, "success");
+        payload.setType(Payload.PAYLOAD_ACK);
         return payload;
     }
 

@@ -5,19 +5,12 @@ import io.bytechat.entity.GroupEntity;
 import io.bytechat.entity.MessageEntity;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.lang.id.IdFactory;
-import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.server.session.Session;
 import io.bytechat.server.session.SessionHelper;
 import io.bytechat.server.session.SessionManager;
-import io.bytechat.service.GroupService;
 import io.bytechat.service.ImService;
-import io.bytechat.service.MessageService;
-import io.bytechat.service.UserService;
-import io.bytechat.service.impl.DefaultGroupService;
-import io.bytechat.service.impl.DefaultMessageService;
-import io.bytechat.service.impl.DefaultUserService;
 import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Command;
 import io.bytechat.tcp.entity.Packet;
@@ -42,20 +35,11 @@ import java.util.Map;
 @Processor(name = ImService.GROUP_MSG)
 public class GroupMsgProcessor extends AbstractRequestProcessor {
 
-    private UserService userService;
-
-    private MessageService messageService;
-
-    private GroupService groupService;
-
     private SessionManager sessionManager;
 
     private IdFactory idFactory;
 
     public GroupMsgProcessor(){
-        userService = io.bytechat.utils.BeanUtil.getBean(DefaultUserService.class);
-        groupService = io.bytechat.utils.BeanUtil.getBean(DefaultGroupService.class);
-        messageService = io.bytechat.utils.BeanUtil.getBean(DefaultMessageService.class);
         sessionManager = ImSessionManager.getInstance();
         idFactory = SnowflakeIdFactory.getInstance();
     }
@@ -63,28 +47,9 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
     @Override
     public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
         GroupMsgRequest request = BeanUtil.mapToBean(params, GroupMsgRequest.class, false);
-        GroupEntity groupEntity = groupService.fetchGroupByGroupId(request.getGroupId());
-        List<UserEntity> userEntities = groupService.fetchUsersByGroupId(request.getGroupId());
         Long msgId = idFactory.nextId();
         Long sendUserId = SessionHelper.getUserId(channelHandlerContext.channel(), sessionManager);
-        boolean isSend = groupService.groupIsHaveUser(request.getGroupId(), sendUserId);
-        if (!isSend){
-            return PayloadFactory.newErrorPayload(400, "不在该群内，无法发送消息");
-        }
         saveOfflineMsg(request, msgId, sendUserId);
-        Packet transferPacket = buildTransferPacketMsg(request, groupEntity);
-        for (UserEntity userEntity : userEntities){
-            Integer channelType = request.getChannelType();
-            ChannelType type = ChannelType.getChannelType(channelType);
-            Long userId = userEntity.getId();
-            if (sessionManager.exists(type, userId)){
-                Session toSession = sessionManager.fetchSessionByUserIdAndChannelType(userId, type);
-                toSession.writeAndFlush(transferPacket);
-                groupService.updateGroupMsgAckId(userId, msgId, request.getGroupId());
-            }else {
-                //do nothing....
-            }
-        }
         saveHistoryMsg(request, msgId, sendUserId);
         return PayloadFactory.newSuccessPayload();
     }
@@ -109,16 +74,14 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
      * 存贮离线消息
      */
     private void saveOfflineMsg(GroupMsgRequest request, Long msgId, Long sendUserId) {
-        MessageEntity message = messageBuild(request, msgId, sendUserId);
-        messageService.saveOfflineMsg(message);
+
     }
 
     /**
      * 保存历史消息
      */
     private void saveHistoryMsg(GroupMsgRequest request, Long msgId, Long sendUserId){
-        MessageEntity message = messageBuild(request, msgId, sendUserId);
-        messageService.saveHistoryMsg(message);
+
     }
 
     private MessageEntity messageBuild(GroupMsgRequest request, Long msgId, Long sendUserId){

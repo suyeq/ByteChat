@@ -8,7 +8,6 @@ import io.bytechat.tcp.factory.PayloadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -31,15 +30,21 @@ public class BaseFunc {
         try{
             CompletableFuture<Packet> promise = client.sendRequest(packet);
             payload = promise.get(5, TimeUnit.SECONDS).getPayload();
+        }catch (TimeoutException e){
+            payload = PayloadFactory.newSuccessPayload();
+            //TODO :模拟用户选择是否重发时间
+            if (true){
+                client.sendRequest(packet);
+            }
         }catch (Exception e){
-            payload = PayloadFactory.newErrorPayload(400, "执行命令超时");
+            payload = PayloadFactory.newErrorPayload(400, "execute command error");
             log.error("执行命令错误,cause={}", e.getCause());
         }
         return payload;
     }
 
     public void closeConnection(){
-        client.disconnect();
+        client.closeConnect();
     }
 
 

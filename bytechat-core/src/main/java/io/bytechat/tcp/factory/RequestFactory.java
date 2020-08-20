@@ -15,6 +15,13 @@ public class RequestFactory {
         request.setServiceName(serviceName);
         request.setMethodName(methodName);
         request.setParams(params);
+        request.setType(Request.REQUEST_MSG);
+        return request;
+    }
+
+    public static Request newRequest(){
+        Request request = new Request();
+        request.setType(Request.REQUEST_ACK);
         return request;
     }
 }

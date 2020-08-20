@@ -18,6 +18,7 @@ public class PacketExecutor extends AbstractExecutor<Packet> {
     private RequestProcessorContext requestHandler;
 
     private PacketExecutor() {
+        super(BusinessExecutorNewInstance.executor);
         this.requestHandler = RequestProcessorContext.getInstance();
     }
 

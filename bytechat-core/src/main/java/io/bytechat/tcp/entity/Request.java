@@ -16,6 +16,15 @@ import java.util.Map;
 public class Request {
 
     /**
+     * only ack notice ,no content
+     */
+    public static byte REQUEST_ACK = (byte) 0 << 1;
+
+    public static byte REQUEST_MSG = (byte) 1 << 2;
+
+    private byte type;
+
+    /**
      * 请求服务的服务名称
      */
     private String serviceName;
@@ -29,4 +38,8 @@ public class Request {
      * 传入的参数
      */
     private Map<String, Object> params;
+
+    public boolean isOnlyAck(){
+        return type == REQUEST_ACK;
+    }
 }

@@ -1,16 +1,17 @@
 package io.bytechat.executor;
 
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.lang.Func;
 import io.bytechat.lang.config.ConfigFactory;
 import io.bytechat.lang.config.ThreadPoolConfig;
 import io.bytechat.lang.exception.ConfigException;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author : denglinhai
@@ -19,14 +20,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class AbstractExecutor<T> implements Executor<T>{
 
-    private java.util.concurrent.Executor executor = null;
-
-    public AbstractExecutor(){
-        this(null);
-    }
+    private java.util.concurrent.Executor executor;
 
     public AbstractExecutor(java.util.concurrent.Executor eventExecutor){
-        this.executor = eventExecutor == null ? ExecutorNewInstance.executor : eventExecutor;
+        Assert.notNull(eventExecutor, "executor is not null");
+        this.executor = eventExecutor ;
     }
 
     @Override
@@ -53,6 +51,17 @@ public abstract class AbstractExecutor<T> implements Executor<T>{
         return promise;
     }
 
+    @Override
+    public void scheduledExecute(Object... request){
+        Long delay = (Long) request[0];
+        ((ScheduledThreadPoolExecutor)executor).schedule(new Runnable() {
+            @Override
+            public void run() {
+                doExecute(request);
+            }
+        }, delay, TimeUnit.MILLISECONDS);
+    }
+
     /**
      * 将具体执行器执行的具体步骤交由子类实现
      * @param task
@@ -64,10 +73,18 @@ public abstract class AbstractExecutor<T> implements Executor<T>{
      * 实例化一个线程池，用于业务场景
      * @return
      */
-    private static final class ExecutorNewInstance{
+    protected static final class BusinessExecutorNewInstance{
          private static ThreadPoolConfig config = ConfigFactory.getConfig(ThreadPoolConfig.class);
-         private static java.util.concurrent.Executor executor = new ThreadPoolExecutor(config.corePoolSize(),
+         public static java.util.concurrent.Executor executor = new ThreadPoolExecutor(config.corePoolSize(),
                  config.maxPoolSize(), config.keepAliveTime(), TimeUnit.SECONDS, new ArrayBlockingQueue<>(config.blockingQueueLength()),
                  new DefaultThreadFactory(config.threadName(), true));
+    }
+
+    /**
+     * msg confirm executor
+     */
+    protected static final class ConfirmExecutorNewInstance{
+        private static ThreadPoolConfig config = ConfigFactory.getConfig(ThreadPoolConfig.class);
+        public static java.util.concurrent.Executor executor = new ScheduledThreadPoolExecutor(6);
     }
 }
