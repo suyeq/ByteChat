@@ -4,8 +4,6 @@ import cn.hutool.core.lang.Assert;
 import io.bytechat.confirm.MsgConfirmExecutor;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
-import io.bytechat.server.balancer.LoadBalancer;
-import io.bytechat.server.balancer.PollLoadBalancer;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PacketFactory;
@@ -39,14 +37,11 @@ public class GenericClient implements Client {
 
     private volatile boolean connect;
 
-    private LoadBalancer loadBalancer;
-
     private MsgConfirmExecutor confirmExecutor;
 
     public GenericClient(){
         this.connect = false;
         Initializer.init();
-        loadBalancer = PollLoadBalancer.getInstance();
         confirmExecutor = MsgConfirmExecutor.getInstance();
     }
 
@@ -61,7 +56,7 @@ public class GenericClient implements Client {
     public void connect() {
         // 默认serverAttr不传就走集群路线
         if (serverAttr == null){
-            serverAttr = loadBalancer.nextServer();
+            //serverAttr = loadBalancer.nextServer();
         }
         Assert.notNull(serverAttr, "serverAttr不能为空");
         eventLoopGroup = new NioEventLoopGroup();
@@ -98,7 +93,13 @@ public class GenericClient implements Client {
             log.info("client not connect server");
             return;
         }
+        connect = false;
         eventLoopGroup.shutdownGracefully();
+    }
+
+    @Override
+    public boolean isClose() {
+        return !connect;
     }
 
     @Override

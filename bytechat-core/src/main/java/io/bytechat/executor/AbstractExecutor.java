@@ -52,14 +52,16 @@ public abstract class AbstractExecutor<T> implements Executor<T>{
     }
 
     @Override
-    public void scheduledExecute(Object... request){
+    public ScheduledFuture<T> scheduledExecute(Object... request){
         Long delay = (Long) request[0];
-        ((ScheduledThreadPoolExecutor)executor).schedule(new Runnable() {
+        java.util.concurrent.ScheduledFuture scheduledFuture =
+                ((ScheduledThreadPoolExecutor)executor).scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 doExecute(request);
             }
-        }, delay, TimeUnit.MILLISECONDS);
+        }, 0, delay, TimeUnit.MILLISECONDS);
+        return scheduledFuture;
     }
 
     /**

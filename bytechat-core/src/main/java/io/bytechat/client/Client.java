@@ -22,6 +22,12 @@ public interface Client {
     void closeConnect();
 
     /**
+     * 是否关闭
+     * @return
+     */
+    boolean isClose();
+
+    /**
      * 发送请求
      * @param request
      * @return

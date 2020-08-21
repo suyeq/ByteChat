@@ -30,7 +30,7 @@ public class MsgConfirmExecutor extends AbstractExecutor {
         Long msgId = (Long) request[0];
         Long delay = (Long) request[1];
         if (msgMark.containsKey(msgId)){
-            scheduledExecute(delay, request);
+            //scheduledExecute(delay, request);
         }else {
             log.info("{} msg confirm", msgId);
         }

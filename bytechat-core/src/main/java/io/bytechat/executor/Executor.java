@@ -3,6 +3,7 @@ package io.bytechat.executor;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
 
+import java.util.concurrent.ScheduledFuture;
 
 
 /**
@@ -31,5 +32,5 @@ public interface Executor<T> {
      * @param request
      * @return
      */
-    void scheduledExecute(Object... request);
+    ScheduledFuture<T> scheduledExecute(Object... request);
 }
