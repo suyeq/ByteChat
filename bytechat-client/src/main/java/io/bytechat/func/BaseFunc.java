@@ -29,7 +29,7 @@ public class BaseFunc {
         Payload payload;
         try{
             CompletableFuture<Packet> promise = client.sendRequest(packet);
-            payload = promise.get(5, TimeUnit.SECONDS).getPayload();
+            payload = promise.get(3, TimeUnit.SECONDS).getPayload();
         }catch (TimeoutException e){
             payload = PayloadFactory.newSuccessPayload();
             //TODO :模拟用户选择是否重发时间

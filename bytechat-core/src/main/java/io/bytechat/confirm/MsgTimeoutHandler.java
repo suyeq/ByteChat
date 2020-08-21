@@ -5,11 +5,13 @@ import io.bytechat.executor.Executor;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PayloadFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author : denglinhai
  * @date : 10:01 2020/8/21
  */
+@Slf4j
 public class MsgTimeoutHandler{
 
     private Client client;
@@ -36,17 +38,18 @@ public class MsgTimeoutHandler{
         this.packet = packet;
         if (client.isClose()){
             if (manager != null){
-                manager.remove(packet);
+                manager.removeTimeoutHandler(packet);
             }
             return PayloadFactory.newErrorPayload(400, "客户端已关闭");
         }
         currentReconCount++;
+        //重连次数达上限
         if (currentReconCount > 3){
             try{
                 //通知发送消息失败
             }finally {
                 if (manager != null){
-                    manager.remove(packet);
+                    manager.removeTimeoutHandler(packet);
                 }
                 //重连，到这一步可认定客户端已断开连接
                 client.connect();
@@ -60,5 +63,6 @@ public class MsgTimeoutHandler{
 
     public void sendMsg(){
         client.sendRequest(packet);
+        log.info("开始重发消息，msg={}", packet.toString());
     }
 }

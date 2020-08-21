@@ -28,6 +28,11 @@ public interface Client {
     boolean isClose();
 
     /**
+     * 消息已送达送达
+     */
+    void messageDelivery();
+
+    /**
      * 发送请求
      * @param request
      * @return

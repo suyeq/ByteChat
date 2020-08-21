@@ -2,6 +2,7 @@ package io.bytechat.client;
 
 import cn.hutool.core.lang.Assert;
 import io.bytechat.confirm.MsgConfirmExecutor;
+import io.bytechat.confirm.MsgTimeoutHandlerManager;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
 import io.bytechat.tcp.entity.Packet;
@@ -39,10 +40,13 @@ public class GenericClient implements Client {
 
     private MsgConfirmExecutor confirmExecutor;
 
+    private MsgTimeoutHandlerManager msgTimeoutManager;
+
     public GenericClient(){
         this.connect = false;
         Initializer.init();
         confirmExecutor = MsgConfirmExecutor.getInstance();
+        msgTimeoutManager = MsgTimeoutHandlerManager.getInstance();
     }
 
     public GenericClient(ServerAttr serverAttr){
@@ -100,6 +104,11 @@ public class GenericClient implements Client {
     @Override
     public boolean isClose() {
         return !connect;
+    }
+
+    @Override
+    public void messageDelivery() {
+        //msgTimeoutManager.removeTimeoutHandler();
     }
 
     @Override

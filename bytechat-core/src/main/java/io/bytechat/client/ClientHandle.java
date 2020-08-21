@@ -6,6 +6,7 @@ import io.bytechat.tcp.ctx.RequestProcessorContext;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PacketFactory;
+import io.bytechat.tcp.factory.PayloadFactory;
 import io.bytechat.tcp.factory.PendingPackets;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -20,16 +21,16 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class ClientHandle extends ChannelInboundHandlerAdapter {
 
+    private Client genericClient;
+
     private RequestProcessorContext requestProcessorContext;
 
     private CommandProcessorContext commandProcessorContext;
 
-    private MsgConfirmExecutor msgConfirmExecutor;
-
-    public ClientHandle(){
+    public ClientHandle(Client genericClient){
+        this.genericClient = genericClient;
         requestProcessorContext = RequestProcessorContext.getInstance();
         commandProcessorContext = CommandProcessorContext.getInstance();
-        msgConfirmExecutor = MsgConfirmExecutor.getInstance();
     }
 
     @Override
@@ -66,9 +67,10 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
 
     private void onNotice(ChannelHandlerContext ctx, Packet packet) {
         if (packet.getNotice().isOnlyAck()){
-            msgConfirmExecutor.endMonitor(packet.getId());
+            genericClient.messageDelivery();
         }else {
-
+            String msg = String.format("收到消息：%s", packet.getNotice().getContent().toString());
+            System.out.println(msg);
         }
     }
 
@@ -77,16 +79,27 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
     }
 
     private void onResponse(ChannelHandlerContext ctx, Packet packet) {
-        CompletableFuture<Packet> pending = PendingPackets.remove(packet.getId());
-        if (pending != null) {
-            pending.complete(packet);
+//        CompletableFuture<Packet> pending = PendingPackets.remove(packet.getId());
+//        if (pending != null) {
+//            pending.complete(packet);
+//        }
+        if (packet.getPayload().isOnlyAck()){
+            log.info("服务端已收到ack请求，packetId={}", packet.getId());
+        }else {
+            log.info("服务端已收到msg请求，packetId={}", packet.getId());
         }
     }
 
     private void onRequest(ChannelHandlerContext ctx, Packet packet) {
-        Payload payload = requestProcessorContext.process(ctx, packet.getRequest());
-        Packet response = PacketFactory.newResponsePacket(payload, packet.getId());
-        writeResponse(ctx, response);
+        if (packet.getRequest().isOnlyAck()){
+            Payload payload = PayloadFactory.newSuccessAckPayload();
+            Packet response = PacketFactory.newResponsePacket(payload, packet.getId());
+            writeResponse(ctx, response );
+        }else {
+            Payload payload = requestProcessorContext.process(ctx, packet.getRequest());
+            Packet response = PacketFactory.newResponsePacket(payload, packet.getId());
+            writeResponse(ctx, response);
+        }
     }
 
     private void writeResponse(ChannelHandlerContext ctx, Packet response) {

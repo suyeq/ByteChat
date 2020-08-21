@@ -47,10 +47,6 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
     @Override
     public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
         SendP2pMsgRequest request = BeanUtil.mapToBean(params, SendP2pMsgRequest.class, false);
-        //立即返回表明消息到达服务端
-        if (ObjectUtil.isNotNull(request)){
-            return PayloadFactory.newSuccessPayload();
-        }
         Channel fromChannel = channelHandlerContext.channel();
         String sessionId = SessionHelper.getSessionId(fromChannel);
         ImSession session =(ImSession) sessionManager.getSession(sessionId);

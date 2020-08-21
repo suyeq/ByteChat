@@ -35,7 +35,7 @@ public class MsgTimeoutHandlerManager {
         return Singleton.get(MsgTimeoutHandlerManager.class);
     }
 
-    public void add(Packet packet){
+    public void addTimeoutHandler(Packet packet){
         if (ObjectUtil.isNull(packet)){
             log.warn("packet is null");
             return;
@@ -50,7 +50,7 @@ public class MsgTimeoutHandlerManager {
         log.info("添加消息超时任务成功，当前超时任务数={}", handlerMap.size());
     }
 
-    public void remove(Packet packet){
+    public void removeTimeoutHandler(Packet packet){
         if (ObjectUtil.isNull(packet)){
             log.warn("packet is null");
             return;
@@ -58,6 +58,9 @@ public class MsgTimeoutHandlerManager {
         Future future = handlerMap.remove(packet.getId());
 
         if (ObjectUtil.isNotNull(future)){
+            /**
+             * cancel(false)只会取消线程池还未执行的任务
+             */
             future.cancel(true);
         }
     }

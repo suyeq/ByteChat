@@ -7,7 +7,10 @@ import io.bytechat.executor.Executor;
 import io.bytechat.server.channel.ChannelListener;
 import io.bytechat.server.channel.ChannelType;
 import io.bytechat.tcp.entity.Packet;
+import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.executor.PacketExecutor;
+import io.bytechat.tcp.factory.PacketFactory;
+import io.bytechat.tcp.factory.PayloadFactory;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -70,23 +73,29 @@ public class PacketHandle extends ChannelInboundHandlerAdapter{
     }
 
     private void onRequest(ChannelHandlerContext ctx, Packet packet) {
-        //异步执行
-        if (packet.isAsyncHandle()){
-            EventExecutor channelExecutor = ctx.executor();
-            Promise<Packet> promise = new DefaultPromise<>(channelExecutor);
-            Future<Packet> future = executor.asyncExecute(promise, ctx, packet);
-            future.addListener(new GenericFutureListener<Future<? super Packet>>() {
-                @Override
-                public void operationComplete(Future<? super Packet> future) throws Exception {
-                    if (future.isSuccess()){
-                        Packet response = (Packet) future.get();
-                        writeResponse(ctx, response);
-                    }
-                }
-            });
-        }else {
-            Packet response = executor.execute(ctx, packet);
+        if (packet.getRequest().isOnlyAck()){
+            Payload payload = PayloadFactory.newSuccessAckPayload();
+            Packet response = PacketFactory.newResponsePacket(payload, packet.getId());
             writeResponse(ctx, response);
+        }else {
+            //异步执行
+            if (packet.isAsyncHandle()){
+                EventExecutor channelExecutor = ctx.executor();
+                Promise<Packet> promise = new DefaultPromise<>(channelExecutor);
+                Future<Packet> future = executor.asyncExecute(promise, ctx, packet);
+                future.addListener(new GenericFutureListener<Future<? super Packet>>() {
+                    @Override
+                    public void operationComplete(Future<? super Packet> future) throws Exception {
+                        if (future.isSuccess()){
+                            Packet response = (Packet) future.get();
+                            writeResponse(ctx, response);
+                        }
+                    }
+                });
+            }else {
+                Packet response = executor.execute(ctx, packet);
+                writeResponse(ctx, response);
+            }
         }
     }
 
