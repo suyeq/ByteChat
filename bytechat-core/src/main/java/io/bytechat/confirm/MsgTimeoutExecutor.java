@@ -27,7 +27,7 @@ public class MsgTimeoutExecutor extends AbstractExecutor<Packet> {
     @Override
     public Packet doExecute(Object... task) {
         Packet packet = (Packet) task[1];
-        MsgTimeoutHandler handler = (MsgTimeoutHandler) task[2];
+        Handler handler = (Handler) task[2];
         Payload payload = handler.handle(packet);
         return PacketFactory.newResponsePacket(payload, packet.getId());
     }

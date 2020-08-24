@@ -55,12 +55,25 @@ public abstract class AbstractExecutor<T> implements Executor<T>{
     public ScheduledFuture<T> scheduledExecute(Object... request){
         Long delay = (Long) request[0];
         java.util.concurrent.ScheduledFuture scheduledFuture =
-                ((ScheduledThreadPoolExecutor)executor).scheduleAtFixedRate(new Runnable() {
+                ((ScheduledThreadPoolExecutor)executor).schedule(new Runnable() {
             @Override
             public void run() {
                 doExecute(request);
             }
-        }, 0, delay, TimeUnit.MILLISECONDS);
+        }, delay, TimeUnit.MILLISECONDS);
+        return scheduledFuture;
+    }
+
+    @Override
+    public ScheduledFuture<T> scheduleRateExecute(Object... request) {
+        Long delay = (Long) request[0];
+        java.util.concurrent.ScheduledFuture scheduledFuture =
+                ((ScheduledThreadPoolExecutor)executor).scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        doExecute(request);
+                    }
+                }, 0, delay, TimeUnit.MILLISECONDS);
         return scheduledFuture;
     }
 

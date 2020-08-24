@@ -30,7 +30,7 @@ public interface Client {
     /**
      * 消息已送达送达
      */
-    void messageDelivery();
+    void messageDelivery(Packet packet);
 
     /**
      * 发送请求

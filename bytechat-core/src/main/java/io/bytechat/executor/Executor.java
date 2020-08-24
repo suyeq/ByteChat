@@ -28,9 +28,16 @@ public interface Executor<T> {
     Future<T> asyncExecute(Promise<T> promise, Object... request);
 
     /**
-     * delay excute task
+     * delay execute task
      * @param request
      * @return
      */
     ScheduledFuture<T> scheduledExecute(Object... request);
+
+    /**
+     * rate execute task
+     * @param request
+     * @return
+     */
+    ScheduledFuture<T> scheduleRateExecute(Object... request);
 }

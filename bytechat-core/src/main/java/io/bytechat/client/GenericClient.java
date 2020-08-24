@@ -1,7 +1,7 @@
 package io.bytechat.client;
 
 import cn.hutool.core.lang.Assert;
-import io.bytechat.confirm.MsgConfirmExecutor;
+import io.bytechat.confirm.MsgMonitorHandlerManager;
 import io.bytechat.confirm.MsgTimeoutHandlerManager;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
@@ -38,15 +38,12 @@ public class GenericClient implements Client {
 
     private volatile boolean connect;
 
-    private MsgConfirmExecutor confirmExecutor;
-
-    private MsgTimeoutHandlerManager msgTimeoutManager;
+    private MsgMonitorHandlerManager monitorManager;
 
     public GenericClient(){
         this.connect = false;
         Initializer.init();
-        confirmExecutor = MsgConfirmExecutor.getInstance();
-        msgTimeoutManager = MsgTimeoutHandlerManager.getInstance();
+        monitorManager = MsgMonitorHandlerManager.getInstance();
     }
 
     public GenericClient(ServerAttr serverAttr){
@@ -107,8 +104,8 @@ public class GenericClient implements Client {
     }
 
     @Override
-    public void messageDelivery() {
-        //msgTimeoutManager.removeTimeoutHandler();
+    public void messageDelivery(Packet packet) {
+        monitorManager.removeHandler(packet);
     }
 
     @Override
@@ -121,10 +118,11 @@ public class GenericClient implements Client {
             promise.complete(PacketFactory.newResponsePacket(response, request.getId()));
             return promise;
         }
+        //添加消息监听
+        monitorManager.addHandler(request, this);
         PendingPackets.add(request.getId(), promise);
         ChannelFuture channelFuture = channel.writeAndFlush(request);
         //TODO: how make this msg in queue...
-        confirmExecutor.startMonitor(request.getId());
         //...
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
@@ -135,6 +133,7 @@ public class GenericClient implements Client {
                         promise.completeExceptionally(future.cause());
                     }
                 }
+                monitorManager.removeHandler(request);
             }
         });
         return promise;

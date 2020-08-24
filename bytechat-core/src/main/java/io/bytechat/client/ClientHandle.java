@@ -1,18 +1,14 @@
 package io.bytechat.client;
 
-import io.bytechat.confirm.MsgConfirmExecutor;
 import io.bytechat.tcp.ctx.CommandProcessorContext;
 import io.bytechat.tcp.ctx.RequestProcessorContext;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.tcp.factory.PayloadFactory;
-import io.bytechat.tcp.factory.PendingPackets;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author : denglinhai
@@ -67,7 +63,7 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
 
     private void onNotice(ChannelHandlerContext ctx, Packet packet) {
         if (packet.getNotice().isOnlyAck()){
-            genericClient.messageDelivery();
+            genericClient.messageDelivery(packet);
         }else {
             String msg = String.format("收到消息：%s", packet.getNotice().getContent().toString());
             System.out.println(msg);
