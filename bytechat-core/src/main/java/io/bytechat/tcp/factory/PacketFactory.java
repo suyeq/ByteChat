@@ -45,4 +45,12 @@ public class PacketFactory {
         packet.setAsyncHandle(false);
         return packet;
     }
+
+    public static Packet newNoticePacket(Notice notice, Long id){
+        Packet packet = new DefaultPacket();
+        packet.setId(id);
+        packet.setType(Packet.PACKET_NOTICE);
+        packet.setNotice(notice);
+        return packet;
+    }
 }

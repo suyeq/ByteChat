@@ -28,7 +28,7 @@ public interface Client {
     boolean isClose();
 
     /**
-     * 消息已送达送达
+     * 消息已送达
      */
     void messageDelivery(Packet packet);
 

@@ -4,8 +4,10 @@ import io.bytechat.tcp.ctx.CommandProcessorContext;
 import io.bytechat.tcp.ctx.RequestProcessorContext;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
+import io.bytechat.tcp.entity.Request;
 import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.tcp.factory.PayloadFactory;
+import io.bytechat.tcp.factory.RequestFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +69,9 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
         }else {
             String msg = String.format("收到消息：%s", packet.getNotice().getContent().toString());
             System.out.println(msg);
+            Request request = RequestFactory.newRequest();
+            Packet ackPacket = PacketFactory.newRequestPacket(request, packet.getId());
+            genericClient.sendRequest(ackPacket);
         }
     }
 

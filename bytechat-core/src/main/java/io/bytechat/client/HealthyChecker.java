@@ -41,6 +41,7 @@ public class HealthyChecker extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        //TODO: 有bug
         ctx.executor().schedule(new Runnable() {
             @Override
             public void run() {

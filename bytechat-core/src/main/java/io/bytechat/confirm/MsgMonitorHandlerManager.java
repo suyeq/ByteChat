@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.ObjectUtil;
 import io.bytechat.client.Client;
 import io.bytechat.tcp.entity.Packet;
+import io.bytechat.tcp.entity.Request;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Future;
@@ -30,6 +31,11 @@ public class MsgMonitorHandlerManager extends AbstractHandlerManager {
     public void addHandler(Packet packet, Client client) {
         if (ObjectUtil.isNull(packet)){
             log.warn("packet is null");
+            return;
+        }
+        //排除消息确认请求
+        Request request = packet.getRequest();
+        if (request.isOnlyAck()){
             return;
         }
         //监听多长时间

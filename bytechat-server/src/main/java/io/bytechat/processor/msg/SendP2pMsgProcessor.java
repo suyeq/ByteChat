@@ -12,9 +12,11 @@ import io.bytechat.service.ImService;
 import io.bytechat.session.ImSession;
 import io.bytechat.session.ImSessionManager;
 import io.bytechat.tcp.entity.Command;
+import io.bytechat.tcp.entity.Notice;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.CommandFactory;
+import io.bytechat.tcp.factory.NoticeFactory;
 import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.tcp.factory.PayloadFactory;
 import io.bytechat.tcp.processor.AbstractRequestProcessor;
@@ -81,6 +83,17 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
      * @param request
      * @return
      */
+//    private Packet buildTransferPacketMsg(long userId, String userName, SendP2pMsgRequest request){
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("userId", userId);
+//        params.put("userName", userName);
+//        params.put("msgType", request.getMsgType());
+//        params.put("content", request.getContent());
+//        params.put("isGroup", 0);
+//        Command command = CommandFactory.newCommand(ImService.RECV_MSG, params);
+//        return PacketFactory.newCommandPacket(command);
+//    }
+
     private Packet buildTransferPacketMsg(long userId, String userName, SendP2pMsgRequest request){
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -88,8 +101,8 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         params.put("msgType", request.getMsgType());
         params.put("content", request.getContent());
         params.put("isGroup", 0);
-        Command command = CommandFactory.newCommand(ImService.RECV_MSG, params);
-        return PacketFactory.newCommandPacket(command);
+        Notice notice = NoticeFactory.newNotice(params);
+        return PacketFactory.newNoticePacket(notice, 1L);
     }
 
     /**
