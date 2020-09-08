@@ -39,11 +39,15 @@ public class MsgMonitorHandlerManager extends AbstractHandlerManager {
             return;
         }
         //监听多长时间
-        int delay = 3;
+        int delay = 4 * 1000;
         if (!handlerMap.containsKey(packet.getId())){
-            MsgMonitorHandler handler = new MsgMonitorHandler(client);
-            Future<Packet> future= executor.scheduledExecute(delay, packet, handler);
-            handlerMap.put(packet.getId(), future);
+            try{
+                MsgMonitorHandler handler = new MsgMonitorHandler(client);
+                Future<Packet> future= executor.scheduledExecute(delay, packet, handler);
+                handlerMap.put(packet.getId(), future);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         log.info("添加消息监听任务成功，当前监听任务数={}", handlerMap.size());
     }

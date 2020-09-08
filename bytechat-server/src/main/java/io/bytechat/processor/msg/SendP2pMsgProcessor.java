@@ -47,7 +47,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
     }
 
     @Override
-    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
+    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params, Long packetId) {
         SendP2pMsgRequest request = BeanUtil.mapToBean(params, SendP2pMsgRequest.class, false);
         Channel fromChannel = channelHandlerContext.channel();
         String sessionId = SessionHelper.getSessionId(fromChannel);
@@ -66,7 +66,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         }else {
             Object transferMsg;
             if (toSession.channelType() == ChannelType.TCP){
-                transferMsg = buildTransferPacketMsg(fromUserId, fromUserName, request);
+                transferMsg = buildTransferPacketMsg(fromUserId, fromUserName, request, packetId);
             }else {
                 transferMsg = null;
             }
@@ -94,7 +94,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
 //        return PacketFactory.newCommandPacket(command);
 //    }
 
-    private Packet buildTransferPacketMsg(long userId, String userName, SendP2pMsgRequest request){
+    private Packet buildTransferPacketMsg(long userId, String userName, SendP2pMsgRequest request, Long packetId){
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("userName", userName);
@@ -102,7 +102,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         params.put("content", request.getContent());
         params.put("isGroup", 0);
         Notice notice = NoticeFactory.newNotice(params);
-        return PacketFactory.newNoticePacket(notice, 1L);
+        return PacketFactory.newNoticePacket(notice, packetId);
     }
 
     /**

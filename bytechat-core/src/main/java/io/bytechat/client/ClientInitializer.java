@@ -25,6 +25,6 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
         BaseConfig config = ConfigFactory.getConfig(BaseConfig.class);
         pipeline.addLast(new HealthyChecker(config.pingInterval(), 3, client));
         pipeline.addLast(new PacketCodec());
-        pipeline.addLast(new ClientHandle());
+        pipeline.addLast(new ClientHandle(client));
     }
 }

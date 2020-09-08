@@ -18,11 +18,15 @@ public class Request {
     /**
      * only ack notice ,no content
      */
-    public static byte REQUEST_ACK = (byte) 0 << 1;
+    public static byte REQUEST_ACK = (byte) 1 << 0;
 
-    public static byte REQUEST_MSG = (byte) 1 << 2;
+    public static byte REQUEST_MSG = (byte) 1 << 1;
+
+    public static byte REQUEST_PING = (byte) 1 << 2;
 
     private byte type;
+
+    private Long packetId;
 
     /**
      * 请求服务的服务名称
@@ -41,5 +45,9 @@ public class Request {
 
     public boolean isOnlyAck(){
         return type == REQUEST_ACK;
+    }
+
+    public boolean isOnlyMsg(){
+        return type == REQUEST_MSG;
     }
 }

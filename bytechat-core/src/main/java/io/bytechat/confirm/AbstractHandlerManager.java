@@ -46,7 +46,7 @@ public abstract class AbstractHandlerManager {
              */
             boolean isSuccess = future.cancel(true);
             if (isSuccess){
-                log.info("取消超时任务成功,取消任务id={}，当前超时任务数={}", packet.getId(), handlerMap.size());
+                log.info("取消监听/超时任务成功,取消任务id={}，当前监听/超时任务数={}", packet.getId(), handlerMap.size());
             }
         }
     }

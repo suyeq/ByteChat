@@ -21,6 +21,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
+import java.awt.color.ColorSpace;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -51,6 +52,7 @@ public class GenericClient implements Client {
         this.connect = false;
         this.serverAttr = serverAttr;
         Initializer.init();
+        monitorManager = MsgMonitorHandlerManager.getInstance();
     }
 
     @Override
@@ -118,9 +120,7 @@ public class GenericClient implements Client {
             promise.complete(PacketFactory.newResponsePacket(response, request.getId()));
             return promise;
         }
-        //添加消息监听
-        monitorManager.addHandler(request, this);
-        PendingPackets.add(request.getId(), promise);
+        //PendingPackets.add(request.getId(), promise);
         ChannelFuture channelFuture = channel.writeAndFlush(request);
         //TODO: how make this msg in queue...
         //...
@@ -133,9 +133,18 @@ public class GenericClient implements Client {
                         promise.completeExceptionally(future.cause());
                     }
                 }
-                monitorManager.removeHandler(request);
+                //monitorManager.removeHandler(request);
             }
         });
         return promise;
+    }
+
+    @Override
+    public CompletableFuture<Packet> sendRequest(Packet request, boolean isJoinMsgMonitor) {
+        if (isJoinMsgMonitor){
+            //添加消息监听
+            monitorManager.addHandler(request, this);
+        }
+        return sendRequest(request);
     }
 }

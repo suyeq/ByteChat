@@ -39,4 +39,12 @@ public interface Client {
      */
     CompletableFuture<Packet> sendRequest(Packet request);
 
+    /**
+     * 发送请求
+     * @param request
+     * @param isJoinMsgMonitor 是否加入消息监听
+     * @return
+     */
+    CompletableFuture<Packet> sendRequest(Packet request, boolean isJoinMsgMonitor);
+
 }

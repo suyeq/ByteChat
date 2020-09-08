@@ -6,6 +6,8 @@ import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.factory.PayloadFactory;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 /**
  * @author : denglinhai
  * @date : 10:01 2020/8/21
@@ -42,6 +44,7 @@ public class MsgTimeoutHandler implements Handler{
             }
             return PayloadFactory.newErrorPayload(400, "客户端已关闭");
         }
+        System.out.println(new Date().toString());
         currentReconCount++;
         //重连次数达上限
         if (currentReconCount > 3){
@@ -52,7 +55,8 @@ public class MsgTimeoutHandler implements Handler{
                     monitorManager.removeHandler(packet);
                 }
                 //重连，到这一步可认定客户端已断开连接
-                client.connect();
+                System.out.println(11111111);
+                //client.connect();
                 currentReconCount = 0;
             }
         }else {

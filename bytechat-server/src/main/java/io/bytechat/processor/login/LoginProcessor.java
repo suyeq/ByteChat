@@ -25,10 +25,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -48,14 +45,19 @@ public class LoginProcessor extends AbstractRequestProcessor {
     }
 
     @Override
-    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
+    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params, Long packetId) {
         LoginRequest loginRequest = BeanUtil.mapToBean(params, LoginRequest.class, false);
         //判断是否已经登录
         Channel channel = channelHandlerContext.channel();
-        BaseResult userResult =null;
+        BaseResult userResult = BaseResult.newSuccessResult("200");
                 //= userService.login(loginRequest.getUserName(), loginRequest.getPassword());
         if (userResult.isSuccess()){
-            UserEntity user = (UserEntity) userResult.getContent();
+            Random random = new Random();
+            long userID = random.nextLong();
+            System.out.println(userID);
+            UserEntity user = new UserEntity().setId(userID);
+
+                    //(UserEntity) userResult.getContent();
             ChannelWrapper channelWrapper = ChannelHelper.getChannelWrapper(channel.id());
             ChannelType channelType = channelWrapper.getChannelType();
             boolean isReadyLogin = sessionManager.exists(channelType, user.getId());
@@ -68,9 +70,9 @@ public class LoginProcessor extends AbstractRequestProcessor {
         }
         Payload payload = userResult.isSuccess() ? PayloadFactory.newSuccessPayload()
                 : PayloadFactory.newErrorPayload(userResult.getCode(), userResult.getMsg());
-        if (userResult.isSuccess()){
-            payload.setResult((UserEntity) userResult.getContent());
-        }
+//        if (userResult.isSuccess()){
+//            payload.setResult((UserEntity) userResult.getContent());
+//        }
         return payload;
     }
 

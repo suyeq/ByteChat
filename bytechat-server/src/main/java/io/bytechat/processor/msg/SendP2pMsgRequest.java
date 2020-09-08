@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendP2pMsgRequest {
+public class SendP2pMsgRequest{
 
     private Long toUserId;
 

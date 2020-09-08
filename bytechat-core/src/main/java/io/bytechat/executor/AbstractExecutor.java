@@ -53,7 +53,7 @@ public abstract class AbstractExecutor<T> implements Executor<T>{
 
     @Override
     public ScheduledFuture<T> scheduledExecute(Object... request){
-        Long delay = (Long) request[0];
+        int delay = (Integer) request[0];
         java.util.concurrent.ScheduledFuture scheduledFuture =
                 ((ScheduledThreadPoolExecutor)executor).schedule(new Runnable() {
             @Override
@@ -66,7 +66,7 @@ public abstract class AbstractExecutor<T> implements Executor<T>{
 
     @Override
     public ScheduledFuture<T> scheduleRateExecute(Object... request) {
-        Long delay = (Long) request[0];
+        int delay = (Integer) request[0];
         java.util.concurrent.ScheduledFuture scheduledFuture =
                 ((ScheduledThreadPoolExecutor)executor).scheduleAtFixedRate(new Runnable() {
                     @Override

@@ -86,7 +86,7 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
 //        }
         if (packet.getPayload().isOnlyAck()){
             log.info("服务端已收到ack请求，packetId={}", packet.getId());
-        }else {
+        }else{
             log.info("服务端已收到msg请求，packetId={}", packet.getId());
         }
     }

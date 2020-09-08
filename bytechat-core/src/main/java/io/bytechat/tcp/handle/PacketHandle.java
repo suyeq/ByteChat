@@ -77,7 +77,9 @@ public class PacketHandle extends ChannelInboundHandlerAdapter{
             Payload payload = PayloadFactory.newSuccessAckPayload();
             Packet response = PacketFactory.newResponsePacket(payload, packet.getId());
             writeResponse(ctx, response);
-        }else {
+        }
+
+        if (packet.getRequest().isOnlyMsg()){
             //异步执行
             if (packet.isAsyncHandle()){
                 EventExecutor channelExecutor = ctx.executor();

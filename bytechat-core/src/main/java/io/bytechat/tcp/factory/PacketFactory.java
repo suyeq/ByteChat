@@ -40,6 +40,7 @@ public class PacketFactory {
 
     public static Packet newPingRequestPacket(){
         Request request = new Request();
+        request.setType(Request.REQUEST_PING);
         request.setServiceName("ping");
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
         packet.setAsyncHandle(false);

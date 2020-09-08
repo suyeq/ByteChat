@@ -37,12 +37,13 @@ public class SendP2pFunc {
     public Payload sendP2pMsg(Long toUserId, Integer channelType, String msg, Byte msgType){
         Map<String, Object> params = buildParams(toUserId, channelType, msg, msgType);
         Request request = RequestFactory.newRequest(ImService.P2P_MSG, null, params);
-        Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
+        request.setPacketId(idFactory.nextId());
+        Packet packet = PacketFactory.newRequestPacket(request, request.getPacketId());
         return baseFunc.sendRequest(packet);
     }
 
     private Map<String, Object> buildParams(Long toUserId, Integer channelType, String msg, Byte msgType){
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>(8);
         params.put("toUserId", toUserId);
         params.put("channelType", channelType);
         params.put("msgType", msgType);

@@ -1,6 +1,5 @@
 package io.bytechat.tcp.processor;
 
-import io.bytechat.lang.back.Back;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.entity.Request;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,7 +20,7 @@ public abstract class AbstractRequestProcessor implements RequestProcessor {
     ) {
         Payload payload = new Payload();
         try{
-            payload = doProcessor(channelHandlerContext, request.getParams());
+            payload = doProcessor(channelHandlerContext, request.getParams(), request.getPacketId());
         }catch (Exception e){
             //back.failure(e.getCause().toString());
             payload.setErrorMsg(0, e.getCause().toString());
@@ -37,5 +36,5 @@ public abstract class AbstractRequestProcessor implements RequestProcessor {
      * @param params
      * @return
      */
-    public abstract Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) throws Exception;
+    public abstract Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params, Long packetId) throws Exception;
 }

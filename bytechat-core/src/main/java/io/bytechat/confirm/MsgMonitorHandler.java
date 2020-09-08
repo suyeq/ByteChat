@@ -41,10 +41,10 @@ public class MsgMonitorHandler implements Handler {
         }
 
         if (monitorManager.existHandler(packet)) {
-            log.info("未在指定时间内收到packet={}的确认答复，开始超时重传", packet.toString());
+            log.info("未在指定时间内收到packetId={}的确认答复，开始超时重传", packet.getId());
             timeoutManager.addHandler(packet, client);
         }else {
-            //这一步表明，消息已经收到确认答复，什么都不做
+            //这一步表明，消息已经收到确认答复
             log.info("消息 packet={}已收到答复", packet.toString());
         }
 

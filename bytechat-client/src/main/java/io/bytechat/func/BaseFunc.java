@@ -28,14 +28,14 @@ public class BaseFunc {
     public Payload sendRequest(Packet packet){
         Payload payload;
         try{
-            CompletableFuture<Packet> promise = client.sendRequest(packet);
+            CompletableFuture<Packet> promise = client.sendRequest(packet, true);
             payload = promise.get(3, TimeUnit.SECONDS).getPayload();
         }catch (TimeoutException e){
             payload = PayloadFactory.newSuccessPayload();
             //TODO :模拟用户选择是否重发时间
-            if (true){
-                client.sendRequest(packet);
-            }
+//            if (true){
+//                client.sendRequest(packet);
+//            }
         }catch (Exception e){
             payload = PayloadFactory.newErrorPayload(400, "execute command error");
             log.error("执行命令错误,cause={}", e.getCause());
