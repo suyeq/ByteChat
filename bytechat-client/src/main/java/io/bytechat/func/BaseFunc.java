@@ -25,10 +25,10 @@ public class BaseFunc {
         this.client = client;
     }
 
-    public Payload sendRequest(Packet packet){
+    public Payload sendRequest(Packet packet, boolean isJoinMsgMonitor){
         Payload payload;
         try{
-            CompletableFuture<Packet> promise = client.sendRequest(packet, true);
+            CompletableFuture<Packet> promise = client.sendRequest(packet, isJoinMsgMonitor);
             payload = promise.get(3, TimeUnit.SECONDS).getPayload();
         }catch (TimeoutException e){
             payload = PayloadFactory.newSuccessPayload();

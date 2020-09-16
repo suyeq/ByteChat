@@ -1,11 +1,8 @@
 package io.bytechat.func;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import io.bytechat.lang.id.IdFactory;
-import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
-import io.bytechat.server.channel.ChannelType;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
@@ -35,17 +32,19 @@ public class SendP2pFunc {
     }
 
     public Payload sendP2pMsg(Long toUserId, Integer channelType, String msg, Byte msgType){
-        Map<String, Object> params = buildParams(toUserId, channelType, msg, msgType);
+        long packetId = idFactory.nextId();
+        Map<String, Object> params = buildParams(toUserId, channelType, msg, msgType, packetId);
         Request request = RequestFactory.newRequest(ImService.P2P_MSG, null, params);
-        request.setPacketId(idFactory.nextId());
-        Packet packet = PacketFactory.newRequestPacket(request, request.getPacketId());
-        return baseFunc.sendRequest(packet);
+        Packet packet = PacketFactory.newRequestPacket(request, packetId);
+        return baseFunc.sendRequest(packet, true);
     }
 
-    private Map<String, Object> buildParams(Long toUserId, Integer channelType, String msg, Byte msgType){
+    //TODO: 需要抽象优化处理
+    private Map<String, Object> buildParams(Long toUserId, Integer channelType, String msg, Byte msgType, long packetId){
         Map<String, Object> params = new HashMap<>(8);
         params.put("toUserId", toUserId);
         params.put("channelType", channelType);
+        params.put("packetId", packetId);
         params.put("msgType", msgType);
         params.put("content", msg);
         params.put("sendTime", System.currentTimeMillis());

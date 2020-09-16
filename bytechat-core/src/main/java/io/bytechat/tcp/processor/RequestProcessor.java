@@ -1,6 +1,5 @@
 package io.bytechat.tcp.processor;
 
-import io.bytechat.lang.back.Back;
 import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.entity.Request;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,7 +17,5 @@ public interface RequestProcessor {
      * @param request
      * @return
      */
-    Payload process(ChannelHandlerContext channelHandlerContext, Request request
-           // , Back back
-    );
+    Payload process(ChannelHandlerContext channelHandlerContext, Request request);
 }

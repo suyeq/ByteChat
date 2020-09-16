@@ -1,4 +1,4 @@
-package io.bytechat.lang.status;
+package io.bytechat.lang.constant;
 
 /**
  * @author : denglinhai

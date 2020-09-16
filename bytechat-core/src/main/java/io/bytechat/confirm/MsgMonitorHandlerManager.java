@@ -39,7 +39,7 @@ public class MsgMonitorHandlerManager extends AbstractHandlerManager {
             return;
         }
         //监听多长时间
-        int delay = 4 * 1000;
+        int delay = 5 * 1000;
         if (!handlerMap.containsKey(packet.getId())){
             try{
                 MsgMonitorHandler handler = new MsgMonitorHandler(client);

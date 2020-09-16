@@ -2,6 +2,7 @@ package io.bytechat.processor.msg;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import io.bytechat.entity.MessageEntity;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
@@ -11,11 +12,9 @@ import io.bytechat.server.session.SessionManager;
 import io.bytechat.service.ImService;
 import io.bytechat.session.ImSession;
 import io.bytechat.session.ImSessionManager;
-import io.bytechat.tcp.entity.Command;
 import io.bytechat.tcp.entity.Notice;
 import io.bytechat.tcp.entity.Packet;
 import io.bytechat.tcp.entity.Payload;
-import io.bytechat.tcp.factory.CommandFactory;
 import io.bytechat.tcp.factory.NoticeFactory;
 import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.tcp.factory.PayloadFactory;
@@ -47,17 +46,21 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
     }
 
     @Override
-    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params, Long packetId) {
+    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
+        System.out.println(params.toString());
         SendP2pMsgRequest request = BeanUtil.mapToBean(params, SendP2pMsgRequest.class, false);
+        /**  TODO :需要优化 **/
         Channel fromChannel = channelHandlerContext.channel();
         String sessionId = SessionHelper.getSessionId(fromChannel);
         ImSession session =(ImSession) sessionManager.getSession(sessionId);
         long fromUserId = session.userId();
         String fromUserName = session.getUserName();
+        /** --------- **/
         long toUserId = request.getToUserId();
         Integer toChannelType = request.getChannelType();
         Long msgId = idFactory.nextId();
         ChannelType channelType = ChannelType.getChannelType( toChannelType == null ? 0 : toChannelType);
+        //TODO: 需要优化
         ImSession toSession =(ImSession) sessionManager.fetchSessionByUserIdAndChannelType(toUserId, channelType);
 
         if (ObjectUtil.isNull(toSession)) {
@@ -66,7 +69,7 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
         }else {
             Object transferMsg;
             if (toSession.channelType() == ChannelType.TCP){
-                transferMsg = buildTransferPacketMsg(fromUserId, fromUserName, request, packetId);
+                transferMsg = buildTransferPacketMsg(fromUserId, fromUserName, request, request.getPacketId());
             }else {
                 transferMsg = null;
             }
@@ -96,6 +99,11 @@ public class SendP2pMsgProcessor extends AbstractRequestProcessor {
 
     private Packet buildTransferPacketMsg(long userId, String userName, SendP2pMsgRequest request, Long packetId){
         Map<String, Object> params = new HashMap<>();
+        System.out.println(request.getContent());
+        if (StrUtil.isEmpty(request.getContent())){
+            Notice notice = NoticeFactory.newNotice();
+            return PacketFactory.newNoticePacket(notice, packetId);
+        }
         params.put("userId", userId);
         params.put("userName", userName);
         params.put("msgType", request.getMsgType());

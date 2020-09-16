@@ -1,7 +1,6 @@
 package io.bytechat.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-@TableName("group_user")
+//@TableName("group_user")
 public class GroupUserEntity {
 
     private Long groupId;

@@ -45,7 +45,7 @@ public class GroupMsgProcessor extends AbstractRequestProcessor {
     }
 
     @Override
-    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params, Long packetId) {
+    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
         GroupMsgRequest request = BeanUtil.mapToBean(params, GroupMsgRequest.class, false);
         Long msgId = idFactory.nextId();
         Long sendUserId = SessionHelper.getUserId(channelHandlerContext.channel(), sessionManager);

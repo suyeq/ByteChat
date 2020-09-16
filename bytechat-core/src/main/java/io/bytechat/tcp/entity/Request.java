@@ -2,7 +2,6 @@ package io.bytechat.tcp.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.util.Map;
 
@@ -25,8 +24,6 @@ public class Request {
     public static byte REQUEST_PING = (byte) 1 << 2;
 
     private byte type;
-
-    private Long packetId;
 
     /**
      * 请求服务的服务名称

@@ -4,7 +4,6 @@ import cn.hutool.core.lang.Assert;
 import com.alibaba.fastjson.JSON;
 import io.bytechat.entity.UserEntity;
 import io.bytechat.lang.id.IdFactory;
-import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
@@ -38,7 +37,7 @@ public class UserFunc {
     public Payload fetchOnlineUsers(){
         Request request = RequestFactory.newRequest(ImService.GET_ONLINE_USER, null, null);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        Payload payload = baseFunc.sendRequest(packet);
+        Payload payload = baseFunc.sendRequest(packet, false);
         //反序列化object对象，fastjson不会反序列化object
         List<UserEntity> userEntities = JSON.parseArray(payload.getResult().toString(), UserEntity.class);
         //List<UserEntity> userEntities = (List<UserEntity>) payload.getResult();
@@ -55,7 +54,7 @@ public class UserFunc {
         Map<String, Object> params = buildParams(usrId);
         Request request = RequestFactory.newRequest(ImService.USER_OFFLINE, null, params);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        Payload payload = baseFunc.sendRequest(packet);
+        Payload payload = baseFunc.sendRequest(packet, false);
         baseFunc.closeConnection();
         return payload;
     }
@@ -64,7 +63,7 @@ public class UserFunc {
         Map<String, Object> params = buildParams(userId);
         Request request = RequestFactory.newRequest(ImService.FRIEND_ADD, null, params);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        return baseFunc.sendRequest(packet);
+        return baseFunc.sendRequest(packet, false);
     }
 
     private Map<String, Object> buildParams(Long userId){

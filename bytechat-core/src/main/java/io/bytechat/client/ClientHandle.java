@@ -1,5 +1,6 @@
 package io.bytechat.client;
 
+import io.bytechat.lang.constant.ParamEnums;
 import io.bytechat.tcp.ctx.CommandProcessorContext;
 import io.bytechat.tcp.ctx.RequestProcessorContext;
 import io.bytechat.tcp.entity.Packet;
@@ -11,6 +12,9 @@ import io.bytechat.tcp.factory.RequestFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author : denglinhai
@@ -65,11 +69,17 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
 
     private void onNotice(ChannelHandlerContext ctx, Packet packet) {
         if (packet.getNotice().isOnlyAck()){
+            log.info("收到notice的确认消息,packetId={}", packet.getId());
             genericClient.messageDelivery(packet);
         }else {
             String msg = String.format("收到消息：%s", packet.getNotice().getContent().toString());
             System.out.println(msg);
-            Request request = RequestFactory.newRequest();
+            Map<String, Object> map = new HashMap<>();
+            map.put(ParamEnums.PACKET_ID.toString(), packet.getId());
+            //TODO: 需要字段标准化
+            map.put("toUserId", packet.getNotice().getContent().get("userId"));
+            map.put("channelType", 1);
+            Request request = RequestFactory.newRequest("p2pMsg", map);
             Packet ackPacket = PacketFactory.newRequestPacket(request, packet.getId());
             genericClient.sendRequest(ackPacket);
         }

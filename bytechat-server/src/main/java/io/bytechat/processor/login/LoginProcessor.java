@@ -45,7 +45,7 @@ public class LoginProcessor extends AbstractRequestProcessor {
     }
 
     @Override
-    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params, Long packetId) {
+    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
         LoginRequest loginRequest = BeanUtil.mapToBean(params, LoginRequest.class, false);
         //判断是否已经登录
         Channel channel = channelHandlerContext.channel();

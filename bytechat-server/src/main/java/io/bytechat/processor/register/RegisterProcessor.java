@@ -26,7 +26,7 @@ public class RegisterProcessor extends AbstractRequestProcessor {
     }
 
     @Override
-    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params, Long packetId) {
+    public Payload doProcessor(ChannelHandlerContext channelHandlerContext, Map<String, Object> params) {
         return null;
     }
 }

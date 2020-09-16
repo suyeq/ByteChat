@@ -1,17 +1,12 @@
 package io.bytechat.confirm;
 
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.ObjectUtil;
 import io.bytechat.client.Client;
-import io.bytechat.executor.AbstractExecutor;
 import io.bytechat.tcp.entity.Packet;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author : denglinhai
@@ -36,7 +31,6 @@ public class MsgTimeoutHandlerManager extends AbstractHandlerManager {
         }
         //多少时间重发一次
         int delay = 3 * 1000;
-        //TODO: 重连BUG，会导致客户端重连服务端，暂未找到
         if (!handlerMap.containsKey(packet.getId())){
             MsgTimeoutHandler handler = new MsgTimeoutHandler(client);
             Future<Packet> future= executor.scheduleRateExecute(delay, packet, handler);

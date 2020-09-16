@@ -2,7 +2,6 @@ package io.bytechat.func;
 
 import cn.hutool.core.lang.Assert;
 import io.bytechat.lang.id.IdFactory;
-import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
@@ -36,7 +35,7 @@ public class RegisterFunc {
         Map<String, Object> params = buildsParams(userName, password);
         Request request = RequestFactory.newRequest(ImService.REGISTER, null, params);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        return baseFunc.sendRequest(packet);
+        return baseFunc.sendRequest(packet, false);
     }
 
     private Map<String, Object> buildsParams(String userName, String password){

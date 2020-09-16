@@ -2,7 +2,6 @@ package io.bytechat.func;
 
 import cn.hutool.core.lang.Assert;
 import io.bytechat.lang.id.IdFactory;
-import io.bytechat.lang.id.MemoryIdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.service.ImService;
 import io.bytechat.tcp.entity.Packet;
@@ -36,7 +35,7 @@ public class SendGroupMsgFunc{
         Map<String, Object> params = buildParams(groupId, msg, channelType, msgType);
         Request request = RequestFactory.newRequest(ImService.GROUP_MSG, null, params);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        return baseFunc.sendRequest(packet);
+        return baseFunc.sendRequest(packet, true);
     }
 
     private Map<String, Object> buildParams(Long groupId, String msg, Integer channelType, Byte msgType){

@@ -35,7 +35,7 @@ public class LoginFunc {
         Map<String, Object> params = buildParams(userName, password);
         Request request = RequestFactory.newRequest(ImService.LOGIN, null, params);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        return baseFunc.sendRequest(packet);
+        return baseFunc.sendRequest(packet, false);
     }
 
     /**

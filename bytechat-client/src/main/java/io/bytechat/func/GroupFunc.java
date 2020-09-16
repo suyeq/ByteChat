@@ -1,8 +1,6 @@
 package io.bytechat.func;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
-import io.bytechat.entity.GroupEntity;
 import io.bytechat.lang.id.IdFactory;
 import io.bytechat.lang.id.SnowflakeIdFactory;
 import io.bytechat.service.ImService;
@@ -36,14 +34,14 @@ public class GroupFunc {
     public Payload createGroup(){
         Request request = RequestFactory.newRequest(ImService.GROUP_ADD, null, null);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        return baseFunc.sendRequest(packet);
+        return baseFunc.sendRequest(packet, false);
     }
 
     public Payload joinGroup(Long groupId){
         Map<String, Object> params = buildParams(groupId);
         Request request = RequestFactory.newRequest(ImService.GROUP_JOIN, null, params);
         Packet packet = PacketFactory.newRequestPacket(request, idFactory.nextId());
-        return baseFunc.sendRequest(packet);
+        return baseFunc.sendRequest(packet, false);
     }
 
     private Map<String, Object> buildParams(Long groupId){

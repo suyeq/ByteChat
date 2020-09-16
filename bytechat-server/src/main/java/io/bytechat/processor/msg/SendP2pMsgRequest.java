@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SendP2pMsgRequest{
 
+    private Long packetId;
+
     private Long toUserId;
 
     private String content;

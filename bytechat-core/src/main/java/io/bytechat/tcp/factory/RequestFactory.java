@@ -24,4 +24,12 @@ public class RequestFactory {
         request.setType(Request.REQUEST_ACK);
         return request;
     }
+
+    public static Request newRequest(String serviceName, Map<String, Object> params){
+        Request request = new Request();
+        request.setParams(params);
+        request.setServiceName(serviceName);
+        request.setType(Request.REQUEST_MSG);
+        return request;
+    }
 }

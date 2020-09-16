@@ -25,4 +25,6 @@ public interface ImService {
     String GROUP_ADD = "addGroup";
 
     String GROUP_JOIN = "joinGroup";
+
+    String MSG_NOTICE = "msgNotice";
 }
