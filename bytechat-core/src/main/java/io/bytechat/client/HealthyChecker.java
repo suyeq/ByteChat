@@ -42,16 +42,19 @@ public class HealthyChecker extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         //TODO: 有bug
-        ctx.executor().schedule(new Runnable() {
+        ctx.executor().scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 if (reConnect > 0){
                     log.info("[{}]尝试第{}次重连", HealthyChecker.class.getSimpleName(), 4 - reConnect);
                     client.connect();
                     reConnect--;
+                }else {
+                    log.info("重连失败, 关闭客户端");
+                    client.closeConnect();
                 }
             }
-        }, 5, TimeUnit.SECONDS);
+        }, 0,5, TimeUnit.SECONDS);
         ctx.fireChannelInactive();
     }
 

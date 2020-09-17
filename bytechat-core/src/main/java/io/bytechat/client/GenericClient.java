@@ -2,7 +2,6 @@ package io.bytechat.client;
 
 import cn.hutool.core.lang.Assert;
 import io.bytechat.confirm.MsgMonitorHandlerManager;
-import io.bytechat.confirm.MsgTimeoutHandlerManager;
 import io.bytechat.init.Initializer;
 import io.bytechat.server.ServerAttr;
 import io.bytechat.tcp.entity.Packet;
@@ -11,7 +10,11 @@ import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.tcp.factory.PayloadFactory;
 import io.bytechat.tcp.factory.PendingPackets;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -21,7 +24,6 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.color.ColorSpace;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -82,9 +84,9 @@ public class GenericClient implements Client {
                 channel = channelFuture.channel();
                 if (future.isSuccess()){
                     connect = true;
-                    log.info("[{}]已经连上服务器{}", this.getClass().getSimpleName(), serverAttr);
+                    log.info("{}已经连上服务器{}", this.getClass().getSimpleName(), serverAttr);
                 }else {
-                    log.info("[{}]连接失败,原因{}", this.getClass().getSimpleName(), future.cause());
+                    log.info("{}连接失败,原因{}", this.getClass().getSimpleName(), future.cause());
                 }
             }
         });
@@ -98,6 +100,7 @@ public class GenericClient implements Client {
         }
         connect = false;
         eventLoopGroup.shutdownGracefully();
+        System.exit(-1);
     }
 
     @Override
