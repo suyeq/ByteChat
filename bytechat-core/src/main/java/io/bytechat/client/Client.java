@@ -1,7 +1,6 @@
 package io.bytechat.client;
 
 import io.bytechat.tcp.entity.Packet;
-import io.netty.util.concurrent.CompleteFuture;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -14,12 +13,17 @@ public interface Client {
     /**
      * 连接服务器
      */
-    void connect();
+    boolean connect();
 
     /**
      * 断开连接
      */
     void closeConnect();
+
+    /**
+     * 连接状态重置
+     */
+    void connectionStateReset();
 
     /**
      * 是否关闭

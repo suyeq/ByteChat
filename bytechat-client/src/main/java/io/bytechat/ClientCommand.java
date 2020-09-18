@@ -4,8 +4,13 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.NumberUtil;
 import io.bytechat.client.Client;
 import io.bytechat.entity.UserEntity;
-import io.bytechat.func.*;
-import io.bytechat.tcp.entity.Packet;
+import io.bytechat.func.BaseFunc;
+import io.bytechat.func.GroupFunc;
+import io.bytechat.func.LoginFunc;
+import io.bytechat.func.RegisterFunc;
+import io.bytechat.func.SendGroupMsgFunc;
+import io.bytechat.func.SendP2pFunc;
+import io.bytechat.func.UserFunc;
 import io.bytechat.tcp.entity.Payload;
 
 import java.util.List;
@@ -51,7 +56,7 @@ public class ClientCommand {
             String msg = scanner.nextLine();
             if (Cli.BYE.equals(msg)){
                 System.out.println("bye! my best friend");
-                System.exit(1);
+                System.exit(-1);
             }
             String[] args = msg.split(" ");
             if (args.length == 0){

@@ -58,7 +58,7 @@ public class GenericClient implements Client {
     }
 
     @Override
-    public void connect() {
+    public boolean connect(){
         // 默认serverAttr不传就走集群路线
         if (serverAttr == null){
             //serverAttr = loadBalancer.nextServer();
@@ -77,7 +77,8 @@ public class GenericClient implements Client {
                     }
                 });
 
-        ChannelFuture channelFuture = bootstrap.connect(serverAttr.getAddress(), serverAttr.getPort());
+        ChannelFuture channelFuture = bootstrap.
+                      connect(serverAttr.getAddress(), serverAttr.getPort());
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
@@ -90,6 +91,7 @@ public class GenericClient implements Client {
                 }
             }
         });
+        return connect == true ? true : false;
     }
 
     @Override
@@ -101,6 +103,11 @@ public class GenericClient implements Client {
         connect = false;
         eventLoopGroup.shutdownGracefully();
         System.exit(-1);
+    }
+
+    @Override
+    public void connectionStateReset() {
+        connect = false;
     }
 
     @Override
