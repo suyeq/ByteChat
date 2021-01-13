@@ -130,7 +130,7 @@ public class GenericClient implements Client {
             promise.complete(PacketFactory.newResponsePacket(response, request.getId()));
             return promise;
         }
-        //PendingPackets.add(request.getId(), promise);
+        PendingPackets.add(request.getId(), promise);
         ChannelFuture channelFuture = channel.writeAndFlush(request);
         //TODO: how make this msg in queue...
         //...
@@ -139,9 +139,7 @@ public class GenericClient implements Client {
             public void operationComplete(Future<? super Void> future) throws Exception {
                 if (!future.isSuccess()){
                     CompletableFuture<Packet> promise = PendingPackets.remove(request.getId());
-                    if (promise != null){
-                        promise.completeExceptionally(future.cause());
-                    }
+                    promise.completeExceptionally(future.cause());
                 }
                 //monitorManager.removeHandler(request);
             }

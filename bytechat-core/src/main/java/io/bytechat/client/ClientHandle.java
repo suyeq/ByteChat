@@ -8,6 +8,7 @@ import io.bytechat.tcp.entity.Payload;
 import io.bytechat.tcp.entity.Request;
 import io.bytechat.tcp.factory.PacketFactory;
 import io.bytechat.tcp.factory.PayloadFactory;
+import io.bytechat.tcp.factory.PendingPackets;
 import io.bytechat.tcp.factory.RequestFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author : denglinhai
@@ -98,6 +100,12 @@ public class ClientHandle extends ChannelInboundHandlerAdapter {
             log.info("服务端已收到ack请求，packetId={}", packet.getId());
         }else{
             log.info("服务端已收到msg请求，packetId={}", packet.getId());
+        }
+        //TODO:暂定
+        /** 消息送达成功，移除future,命令其表示完成**/
+        CompletableFuture<Packet> promise = PendingPackets.remove(packet.getId());
+        if (promise != null){
+            promise.complete(packet);
         }
     }
 

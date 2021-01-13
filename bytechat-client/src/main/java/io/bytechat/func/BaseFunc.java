@@ -29,9 +29,9 @@ public class BaseFunc {
         Payload payload;
         try{
             CompletableFuture<Packet> promise = client.sendRequest(packet, isJoinMsgMonitor);
-            payload = promise.get(3, TimeUnit.SECONDS).getPayload();
+            payload = promise.get(5, TimeUnit.SECONDS).getPayload();
         }catch (TimeoutException e){
-            payload = PayloadFactory.newSuccessPayload();
+            payload = PayloadFactory.newErrorPayload(400, "命令处理超时！");
             //TODO :模拟用户选择是否重发时间
 //            if (true){
 //                client.sendRequest(packet);
